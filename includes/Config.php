@@ -178,8 +178,7 @@ class Config {
 	 * @return $this
 	 */
 	public function save() {
-		$this->filesystem( $this->path )->write( $this->fileName, $this->data->toJson() );
-		return $this;
+		return $this->write( $this->data->toJson() );
 	}
 
 }
