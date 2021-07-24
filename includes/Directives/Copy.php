@@ -97,6 +97,7 @@ class Copy extends AbstractDirective {
 		// Copy file(s)
 		$this
 			->scaffold()
+			->withSourceDir( $this->sourceDir )
 			->withTargetDir( $this->targetDir )
 			->overwrite( $this->shouldOverwrite() )
 			->{$this->action}( $this->from, $this->to, $this->data );
