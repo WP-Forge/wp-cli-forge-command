@@ -141,6 +141,9 @@ class Scaffold {
 			$this->cli()->lightGray( 'File exists, skipping: ' . $to );
 			return $this;
 		}
+		if ( ! file_exists( $this->appendPath( $this->sourceDir, $from ) ) ) {
+			$this->error( 'Unable to locate file: ' . $this->appendPath( $this->sourceDir, $from ) );
+		}
 		$raw     = $this->source->read( $from );
 		$content = $this->replace( $raw, $data );
 		$this->target->write( $to, $content );
