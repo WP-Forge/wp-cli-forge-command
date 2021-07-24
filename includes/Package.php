@@ -64,7 +64,25 @@ class Package {
 			'mustache',
 			$container->service(
 				function () {
-					return new \Mustache_Engine( array( 'entity_flags' => ENT_QUOTES ) );
+
+					// Get Mustache engine
+					$mustache = new \Mustache_Engine(
+						array(
+							'entity_flags' => ENT_QUOTES,
+							'pragmas'      => array(
+								\Mustache_Engine::PRAGMA_FILTERS,
+							),
+						)
+					);
+
+					// Copy all transforms as helper methods
+					$class   = new \ReflectionClass( Transforms::class );
+					$methods = $class->getMethods();
+					foreach ( $methods as $method ) {
+						$mustache->addHelper( $method->name, array( $method->class, $method->name ) );
+					}
+
+					return $mustache;
 				}
 			)
 		);
