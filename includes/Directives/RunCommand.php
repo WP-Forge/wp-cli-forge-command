@@ -24,12 +24,21 @@ class RunCommand extends AbstractDirective {
 	protected $command;
 
 	/**
+	 * Directory from which to run command.
+	 *
+	 * @var string
+	 */
+	protected $path;
+
+	/**
 	 * Initialize properties for the directive.
 	 *
 	 * @param array $args Directive arguments.
 	 */
 	public function initialize( array $args ) {
 		$this->command = data_get( $args, 'command' );
+		$relativeTo    = data_get( $args, 'relativeTo', 'workingDir' );
+		$this->path    = ( 'projectRoot' === $relativeTo ) ? $this->container->get( 'project_config' )->path() : getcwd();
 	}
 
 	/**
@@ -46,13 +55,25 @@ class RunCommand extends AbstractDirective {
 	 */
 	public function execute() {
 
-		\WP_CLI::RunCommand(
-			Str::replaceFirst( 'wp ', '', $this->command ), // Remove 'wp' portion of command
-			array(
-				'launch' => false, // Use the existing process
-				'force'  => $this->shouldOverwrite(),
-			)
-		);
+		if ( Str::startsWith( $this->command, array( 'wp', $this->get( 'base_command' ) ) ) ) {
+
+			// Run a WP-CLI command
+			\WP_CLI::RunCommand(
+				Str::replaceFirst( 'wp ', '', $this->command ), // Remove 'wp' portion of command
+				array(
+					'launch' => false, // Use the existing process
+					'force'  => $this->shouldOverwrite(),
+				)
+			);
+
+		} else {
+
+			passthru( $this->command, $code ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_passthru
+			if ( 0 !== $code ) {
+				$this->error( 'Command failed: ' . $this->command );
+			}
+		}
+
 	}
 
 	/**
