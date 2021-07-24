@@ -112,7 +112,12 @@ class PromptHandler {
 		$transform = (array) data_get( $args, $key, array() );
 		if ( ! empty( $transform ) ) {
 			foreach ( $transform as $callback ) {
-				$value = $callback( $value );
+				// Check for named transforms, otherwise look for a valid callback
+				if ( method_exists( Transforms::class, $callback ) ) {
+					$value = call_user_func( array( Transforms::class, $callback ), $value );
+				} else {
+					$value = $callback( $value );
+				}
 			}
 		}
 		return $value;
