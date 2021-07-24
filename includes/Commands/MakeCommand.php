@@ -45,14 +45,8 @@ class MakeCommand extends AbstractCommand {
 	 * <template>
 	 * : The template name.
 	 *
-	 * [--force=<value>]
+	 * [--force]
 	 * : Whether or not to force overwrite files.
-	 * ---
-	 * default: false
-	 * options:
-	 *   - true
-	 *   - false
-	 * ---
 	 *
 	 * @when before_wp_load
 	 *
