@@ -55,6 +55,11 @@ class RunCommand extends AbstractDirective {
 	 */
 	public function execute() {
 
+		// Allow for dynamic replacements in commands
+		if ( false !== strpos( $this->command, '{{' ) ) {
+			$this->command = $this->container->get( 'mustache' )->render( $this->command, $this->container->get( 'registry' )->get( 'data' )->toArray() );
+		}
+
 		if ( Str::startsWith( $this->command, array( 'wp', $this->get( 'base_command' ) ) ) ) {
 
 			// Run a WP-CLI command
