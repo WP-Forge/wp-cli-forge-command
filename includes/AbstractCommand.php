@@ -47,15 +47,6 @@ abstract class AbstractCommand {
 	}
 
 	/**
-	 * Get command.
-	 *
-	 * @return string
-	 */
-	protected function getCommand() {
-		return $this->container( 'base_command' ) . ' ' . static::COMMAND;
-	}
-
-	/**
 	 * Get an argument by index.
 	 *
 	 * @param int   $index Argument index
@@ -78,5 +69,14 @@ abstract class AbstractCommand {
 	protected function option( $name, $default = null ) {
 		return data_get( $this->options, $name, $default );
 	}
+
+    /**
+     * Get command.
+     *
+     * @return string
+     */
+    protected function getCommand() {
+        return $this->container( 'base_command' ) . ' ' . static::COMMAND;
+    }
 
 }
