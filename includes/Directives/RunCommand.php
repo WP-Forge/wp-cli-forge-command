@@ -2,6 +2,7 @@
 
 namespace WP_Forge\Command\Directives;
 
+use WP_CLI;
 use WP_Forge\Helpers\Str;
 
 /**
@@ -63,7 +64,7 @@ class RunCommand extends AbstractDirective {
 		if ( Str::startsWith( $this->command, array( 'wp', $this->container( 'base_command' ) ) ) ) {
 
 			// Run a WP-CLI command
-			\WP_CLI::RunCommand(
+			WP_CLI::RunCommand(
 				Str::replaceFirst( 'wp ', '', $this->command ), // Remove 'wp' portion of command
 				array(
 					'launch' => false, // Use the existing process
@@ -87,7 +88,7 @@ class RunCommand extends AbstractDirective {
 	 * @return bool
 	 */
 	protected function shouldOverwrite() {
-		return (bool) data_get( \WP_CLI::get_runner()->assoc_args, 'force', false );
+		return (bool) data_get( WP_CLI::get_runner()->assoc_args, 'force', false );
 	}
 
 }

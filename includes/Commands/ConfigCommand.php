@@ -2,6 +2,7 @@
 
 namespace WP_Forge\Command\Commands;
 
+use WP_CLI;
 use WP_Forge\Command\AbstractCommand;
 use WP_Forge\Command\Concerns\Config;
 use WP_Forge\Command\GlobalConfig;
@@ -47,7 +48,7 @@ class ConfigCommand extends AbstractCommand {
 			}
 			$this->globalConfig()->save();
 		} else {
-			\WP_CLI::RunCommand( $this->container->get( 'base_command' ) . ' init' );
+			WP_CLI::RunCommand( $this->container->get( 'base_command' ) . ' init' );
 		}
 	}
 
@@ -115,10 +116,10 @@ class ConfigCommand extends AbstractCommand {
 	 * @param array $args Command arguments
 	 * @param array $options Command options
 	 */
-	public function fetch( $args, $options ) {
+	public function get( $args, $options ) {
 		$this->init( $args, $options );
 		$value = $this->getConfig()->data()->get( $this->argument() );
-		\WP_CLI::print_value( $value );
+		WP_CLI::print_value( $value );
 	}
 
 	/**

@@ -5,8 +5,15 @@ namespace WP_Forge\Command;
 use League\CLImate\CLImate;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
+use Mustache_Engine;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use ReflectionClass;
+use WP_CLI;
 use WP_Forge\Command\Concerns\CLIOutput;
 use WP_Forge\Command\Directives\DirectiveFactory;
+use WP_Forge\Command\Prompts\PromptFactory;
+use WP_Forge\Command\Prompts\PromptHandler;
 use WP_Forge\Container\Container;
 use WP_Forge\DataStore\DataStore;
 
@@ -66,17 +73,17 @@ class Package {
 				function () {
 
 					// Get Mustache engine
-					$mustache = new \Mustache_Engine(
+					$mustache = new Mustache_Engine(
 						array(
 							'entity_flags' => ENT_QUOTES,
 							'pragmas'      => array(
-								\Mustache_Engine::PRAGMA_FILTERS,
+								Mustache_Engine::PRAGMA_FILTERS,
 							),
 						)
 					);
 
 					// Copy all transforms as helper methods
-					$class   = new \ReflectionClass( Transforms::class );
+					$class   = new ReflectionClass( Transforms::class );
 					$methods = $class->getMethods();
 					foreach ( $methods as $method ) {
 						$mustache->addHelper( $method->name, array( $method->class, $method->name ) );
@@ -208,24 +215,19 @@ class Package {
 	 * Register WP CLI commands.
 	 */
 	public function registerCommands() {
-		$iterator = new \RecursiveDirectoryIterator( __DIR__ . '/Commands' );
+		$iterator = new RecursiveDirectoryIterator( __DIR__ . '/Commands' );
 		/**
 		 * File instance.
 		 *
 		 * @var \SplFileInfo $file
 		 */
-		foreach ( new \RecursiveIteratorIterator( $iterator ) as $file ) {
+		foreach ( new RecursiveIteratorIterator( $iterator ) as $file ) {
 			if ( $file->getExtension() === 'php' ) {
 				$relativePath      = str_replace( __DIR__ . DIRECTORY_SEPARATOR, '', $file->getPath() );
 				$relativeNamespace = str_replace( DIRECTORY_SEPARATOR, '\\', $relativePath );
 				$class             = __NAMESPACE__ . "\\$relativeNamespace\\" . $file->getBasename( '.php' );
 				$instance          = new $class( $this->container );
-				/**
-				 * Instance of command class.
-				 *
-				 * @var AbstractCommand $instance
-				 */
-				\WP_CLI::add_command(
+				WP_CLI::add_command(
 					$this->container->get( 'base_command' ) . ' ' . $class::COMMAND,
 					$instance
 				);

@@ -2,6 +2,7 @@
 
 namespace WP_Forge\Command\Directives;
 
+use WP_CLI;
 use WP_Forge\Command\Concerns\Config;
 use WP_Forge\Command\Concerns\Filesystem;
 use WP_Forge\Command\Concerns\Registry;
@@ -109,7 +110,7 @@ class Copy extends AbstractDirective {
 	 * @return bool
 	 */
 	protected function shouldOverwrite() {
-		return (bool) data_get( \WP_CLI::get_runner()->assoc_args, 'force', false );
+		return (bool) data_get( WP_CLI::get_runner()->assoc_args, 'force', false );
 	}
 
 }

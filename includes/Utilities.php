@@ -3,6 +3,8 @@
 namespace WP_Forge\Command;
 
 use WP_Forge\Helpers\Str;
+use RecursiveArrayIterator;
+use RecursiveIteratorIterator;
 
 /**
  * Class Utilities
@@ -33,7 +35,7 @@ class Utilities {
 	 * @return array
 	 */
 	public static function flattenArray( array $array ) {
-		$iterator = new \RecursiveIteratorIterator( new \RecursiveArrayIterator( $array ) );
+		$iterator = new RecursiveIteratorIterator( new RecursiveArrayIterator( $array ) );
 		$result   = array();
 		foreach ( $iterator as $value ) {
 			$keys = array();
