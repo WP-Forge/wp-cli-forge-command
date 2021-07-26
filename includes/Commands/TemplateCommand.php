@@ -41,7 +41,7 @@ class TemplateCommand extends AbstractCommand {
 
 		$config = $this
 			->config()
-			->withFileName( $this->container('template_config_filename') )
+			->withFileName( $this->container( 'template_config_filename' ) )
 			->withPath( getcwd() );
 
 		if ( file_exists( $config->filePath() ) && ! $this->option( 'force', false ) ) {
