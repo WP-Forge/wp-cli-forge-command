@@ -73,18 +73,13 @@ class MakeCommand extends AbstractCommand {
 		$this->config->parse();
 
 		// Make current template directory available to templates
-		$this
-			->registry()
-			->set(
-				'data',
-				$this
-					->registry()
-					->get( 'data' )->
-					set(
-						'template_dir',
-						$this->appendPath( $this->container( 'template_dir' ), $this->template )
-					)
-			);
+        $this
+            ->registry()
+            ->get( 'data' )
+            ->set(
+                'template_dir',
+                $this->appendPath( $this->container( 'template_dir' ), $this->template )
+            );
 
 		$this->collectData();
 
