@@ -88,7 +88,7 @@ class RepoCommand extends AbstractCommand {
 	 *
 	 * ## OPTIONS
 	 *
-	 * [--as=<name>]
+	 * <name>
 	 * : The name assigned to the repo.
 	 * ---
 	 * default: default
@@ -118,7 +118,7 @@ class RepoCommand extends AbstractCommand {
 		// Ensure that git is available
 		$this->gitCheck();
 
-		$name   = $this->option( 'as', 'default' );
+		$name   = $this->argument( 0, 'default' );
 		$folder = $this->globalConfig()->data()->get( "templates.{$name}.path", $this->appendPath( 'templates', $name ) );
 
 		$path = $this->appendPath( $this->container( 'home_dir' ), '.wp-cli', $folder );
@@ -226,7 +226,7 @@ class RepoCommand extends AbstractCommand {
 	 * @param string $remote Git remote
 	 */
 	protected function gitUpdate( $path, $branch = 'master', $remote = 'origin' ) {
-		shell_exec( "git -C {$path} pull {$remote} {$branch}" ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
+		shell_exec( "git -C {$path} pull {$remote} {$branch} --no-rebase" ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
 	}
 
 }
