@@ -188,9 +188,6 @@ abstract class AbstractPrompt {
 	 * @return $this
 	 */
 	public function validate() {
-		if ( ! $this->has( 'type' ) ) {
-			$this->error( 'Prompt type is missing!' );
-		}
 		if ( ! $this->has( 'name' ) ) {
 			$this->error( "Prompt name is missing for type {$this->type()}" );
 		}
