@@ -43,114 +43,125 @@ class InitCommand extends AbstractCommand {
 
 		$this->init( $args, $options );
 
-		$force     = $this->option( 'force', false );
-		$hasConfig = $this->projectConfig()->hasConfig( getcwd() );
+		$force = $this->option( 'force', false );
 
-		// Ensure that we aren't blindly overwriting an existing config
-		if ( ! $force && $hasConfig ) {
-			$this->error( 'A project config already exists!', false );
-			$overwrite = $this->prompt()->confirm( 'Do you want to force overwrite?' );
-			if ( ! $overwrite ) {
-				exit( 1 );
-			}
-		}
-
-		$prompts = $this->prompts();
-
-		$prompts->populate(
-			array(
+		$project_root = $this
+			->prompts()
+			->add(
 				array(
 					'message'   => 'Project root path',
 					'name'      => 'project_root',
 					'type'      => 'input',
 					'default'   => '.',
 					'transform' => 'realpath',
-				),
-				array(
-					'message' => 'Project Name',
-					'name'    => 'project_name',
-					'type'    => 'input',
-				),
-				array(
-					'message' => 'Vendor Name',
-					'name'    => 'vendor_name',
-					'type'    => 'input',
-				),
-				array(
-					'message'           => 'Package Name',
-					'name'              => 'package_name',
-					'type'              => 'input',
-					'default'           => '{{ project_name }}',
-					'transform_default' => '\WP_Forge\Helpers\Str::kebab',
-				),
-				array(
-					'message' => 'Project text domain',
-					'name'    => 'text_domain',
-					'type'    => 'input',
-					'default' => basename( getcwd() ),
-				),
-				array(
-					'message'           => 'Project namespace',
-					'name'              => 'namespace',
-					'type'              => 'input',
-					'default'           => '{{ project_name }}',
-					'transform_default' => '\WP_Forge\Helpers\Str::studly',
-				),
-				array(
-					'message'           => 'Long prefix',
-					'name'              => 'prefixes.long',
-					'type'              => 'input',
-					'default'           => '{{ project_name }}',
-					'transform_default' => '\WP_Forge\Helpers\Str::studly',
-				),
-				array(
-					'message'           => 'Short prefix',
-					'name'              => 'prefixes.short',
-					'type'              => 'input',
-					'default'           => '{{ project_name }}',
-					'transform_default' => '\WP_Forge\Command\Utilities::getInitials',
-				),
-				array(
-					'message'           => 'Function prefix',
-					'name'              => 'prefixes.function',
-					'type'              => 'input',
-					'default'           => '{{ prefixes.short }}_',
-					'transform_default' => 'strtolower',
-				),
-				array(
-					'message'           => 'Constant prefix',
-					'name'              => 'prefixes.constant',
-					'type'              => 'input',
-					'default'           => '{{ prefixes.short }}_',
-					'transform_default' => 'strtoupper',
-				),
-				array(
-					'message'           => 'Meta prefix (used for post meta, options, etc.)',
-					'name'              => 'prefixes.meta',
-					'type'              => 'input',
-					'default'           => '{{ prefixes.short }}_',
-					'transform_default' => 'strtolower',
-				),
-				array(
-					'message'           => 'Slug prefix (used for post types and taxonomy names)',
-					'name'              => 'prefixes.slug',
-					'type'              => 'input',
-					'default'           => '{{ prefixes.short }}-',
-					'transform_default' => 'strtolower',
-				),
+				)
 			)
-		);
+			->render()
+			->store()
+			->get( 'project_root' );
 
-		$prompts->render();
+		$this->projectConfig()->withPath( $project_root );
 
-		$data = $prompts->data();
+		// Ensure that we aren't blindly overwriting an existing config
+		if ( ! $force && $this->projectConfig()->hasConfig() ) {
+			$this->error( 'A project config already exists at that location: ' . $this->projectConfig()->filePath(), false );
+			if ( ! $this->cli()->confirm( 'Do you want to force overwrite?' )->confirmed() ) {
+				exit( 1 );
+			}
+		}
 
-		$this->projectConfig()->withPath( $data->get( 'project_root' ) );
+		$data = $this
+			->prompts()
+			->populate(
+				array(
+					array(
+						'message'   => 'Project root path',
+						'name'      => 'project_root',
+						'type'      => 'input',
+						'default'   => '.',
+						'transform' => 'realpath',
+					),
+					array(
+						'message' => 'Project Name',
+						'name'    => 'project_name',
+						'type'    => 'input',
+					),
+					array(
+						'message' => 'Vendor Name',
+						'name'    => 'vendor_name',
+						'type'    => 'input',
+					),
+					array(
+						'message'           => 'Package Name',
+						'name'              => 'package_name',
+						'type'              => 'input',
+						'default'           => '{{ project_name }}',
+						'transform_default' => 'kebabCase',
+					),
+					array(
+						'message' => 'Project text domain',
+						'name'    => 'text_domain',
+						'type'    => 'input',
+						'default' => basename( getcwd() ),
+					),
+					array(
+						'message'           => 'Project namespace',
+						'name'              => 'namespace',
+						'type'              => 'input',
+						'default'           => '{{ project_name }}',
+						'transform_default' => 'pascalCase',
+					),
+					array(
+						'message'           => 'Long prefix',
+						'name'              => 'prefixes.long',
+						'type'              => 'input',
+						'default'           => '{{ project_name }}',
+						'transform_default' => 'pascalCase',
+					),
+					array(
+						'message'           => 'Short prefix',
+						'name'              => 'prefixes.short',
+						'type'              => 'input',
+						'default'           => '{{ project_name }}',
+						'transform_default' => 'abbreviate',
+					),
+					array(
+						'message'           => 'Function prefix',
+						'name'              => 'prefixes.function',
+						'type'              => 'input',
+						'default'           => '{{ prefixes.short }}_',
+						'transform_default' => 'lowercase',
+					),
+					array(
+						'message'           => 'Constant prefix',
+						'name'              => 'prefixes.constant',
+						'type'              => 'input',
+						'default'           => '{{ prefixes.short }}_',
+						'transform_default' => 'uppercase',
+					),
+					array(
+						'message'           => 'Meta prefix (used for post meta, options, etc.)',
+						'name'              => 'prefixes.meta',
+						'type'              => 'input',
+						'default'           => '{{ prefixes.short }}_',
+						'transform_default' => 'lowercase',
+					),
+					array(
+						'message'           => 'Slug prefix (used for post types and taxonomy names)',
+						'name'              => 'prefixes.slug',
+						'type'              => 'input',
+						'default'           => '{{ prefixes.short }}-',
+						'transform_default' => 'lowercase',
+					),
+				)
+			)
+			->render()
+			->data();
 
-		// Don't add the project root to the config
-		$data->forget( 'project_root' );
-
-		$this->projectConfig()->withData( $data )->save();
+		$this
+			->projectConfig()
+			->withData( $data )
+			->save();
 
 	}
 
