@@ -2,6 +2,9 @@
 
 namespace WP_Forge\Command\Concerns;
 
+/**
+ * Trait Mustache
+ */
 trait Mustache {
 
 	/**
@@ -12,7 +15,7 @@ trait Mustache {
 	protected $container;
 
 	/**
-	 * Replace placeholders in content with actual data, if provided.
+	 * Replace placeholders in content with actual data, if provided and required.
 	 *
 	 * @param string $content Content where placeholders will be replaced
 	 * @param array  $data Data used for replacements
@@ -20,7 +23,7 @@ trait Mustache {
 	 * @return string
 	 */
 	public function replace( $content, array $data ) {
-		if ( ! empty( $data ) ) {
+		if ( ! empty( $data ) && is_string( $content ) && false !== strpos( $content, '{{' ) ) {
 			$content = $this->mustache()->render( $content, $data );
 		}
 		return $content;
