@@ -75,13 +75,6 @@ class InitCommand extends AbstractCommand {
 			->populate(
 				array(
 					array(
-						'message'   => 'Project root path',
-						'name'      => 'project_root',
-						'type'      => 'input',
-						'default'   => '.',
-						'transform' => 'realpath',
-					),
-					array(
 						'message' => 'Project Name',
 						'name'    => 'project_name',
 						'type'    => 'input',
