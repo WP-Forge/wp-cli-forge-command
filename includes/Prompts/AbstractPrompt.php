@@ -160,7 +160,7 @@ abstract class AbstractPrompt {
 	 * @return string
 	 */
 	public function type() {
-		return (string) data_get( $this->args, 'type', 'input' );
+		return strtolower( str_replace( __NAMESPACE__ . '\\', '', get_class( $this ) ) );
 	}
 
 	/**
@@ -189,16 +189,16 @@ abstract class AbstractPrompt {
 	 */
 	public function validate() {
 		if ( ! $this->has( 'name' ) ) {
-			$this->error( "Prompt name is missing for type {$this->type()}" );
+			$this->error( "Prompt name is missing for type '{$this->type()}'" );
 		}
 		if ( empty( $this->name() ) ) {
-			$this->error( "Prompt name is empty for type {$this->type()}" );
+			$this->error( "Prompt name is empty for type '{$this->type()}'" );
 		}
 		if ( ! $this->has( 'message' ) ) {
-			$this->error( "Prompt message is missing for {$this->name()}" );
+			$this->error( "Prompt message is missing for '{$this->name()}'" );
 		}
 		if ( empty( $this->message() ) ) {
-			$this->error( "Prompt message is empty for {$this->name()}" );
+			$this->error( "Prompt message is empty for '{$this->name()}'" );
 		}
 		return $this;
 	}
