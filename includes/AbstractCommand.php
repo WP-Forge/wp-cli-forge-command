@@ -70,13 +70,13 @@ abstract class AbstractCommand {
 		return data_get( $this->options, $name, $default );
 	}
 
-    /**
-     * Get command.
-     *
-     * @return string
-     */
-    protected function getCommand() {
-        return $this->container( 'base_command' ) . ' ' . static::COMMAND;
-    }
+	/**
+	 * Get command.
+	 *
+	 * @return string
+	 */
+	protected function getCommand() {
+		return $this->container( 'base_command' ) . ' ' . static::COMMAND;
+	}
 
 }

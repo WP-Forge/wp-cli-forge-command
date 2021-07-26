@@ -72,6 +72,20 @@ class MakeCommand extends AbstractCommand {
 		// Parse config
 		$this->config->parse();
 
+		// Make current template directory available to templates
+		$this
+			->registry()
+			->set(
+				'data',
+				$this
+					->registry()
+					->get( 'data' )->
+					set(
+						'template_dir',
+						$this->appendPath( $this->container( 'template_dir' ), $this->template )
+					)
+			);
+
 		$this->collectData();
 
 		$this->handleDirectives();
@@ -96,7 +110,7 @@ class MakeCommand extends AbstractCommand {
 			$this->registry()->set( 'namespace', $namespace );
 		}
 
-		$path = $this->appendPath( $this->container( 'templates_dir' ), $namespace, $name );
+		$path = $this->appendPath( $this->container( 'template_dir' ), $namespace, $name );
 
 		if ( file_exists( $path ) ) {
 			return $this->appendPath( $namespace, $name );
@@ -105,7 +119,7 @@ class MakeCommand extends AbstractCommand {
 		$this->warning( 'Unable to find template at: ' . $this->appendPath( $this->templatePath(), $namespace, $name ) );
 		$this->warning( 'Attempting to locate template from another location...' );
 
-		$iterator = new RecursiveDirectoryIterator( $this->container( 'templates_dir' ), FilesystemIterator::SKIP_DOTS );
+		$iterator = new RecursiveDirectoryIterator( $this->container( 'template_dir' ), FilesystemIterator::SKIP_DOTS );
 
 		foreach ( $iterator as $dir ) {
 			if ( file_exists( $this->appendPath( $dir, $name ) ) ) {
@@ -220,7 +234,7 @@ class MakeCommand extends AbstractCommand {
 	 * @return string
 	 */
 	protected function templatePath() {
-		return $this->appendPath( $this->container( 'templates_dir' ), $this->template );
+		return $this->appendPath( $this->container( 'template_dir' ), $this->template );
 	}
 
 }

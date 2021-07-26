@@ -51,8 +51,8 @@ class Package {
 		$container = new Container(
 			array_merge(
 				array(
-					'home_dir'      => $this->getHomeDir(),
-					'templates_dir' => $this->getTemplatesDir(),
+					'home_dir'     => $this->getHomeDir(),
+					'template_dir' => $this->getTemplatesDir(),
 				),
 				$args
 			)
@@ -152,6 +152,10 @@ class Package {
 
 					// Pre-populate user data with project settings
 					$data->put( $projectConfig->data()->toArray() );
+
+					// Also make important paths available
+					$data->set( 'project_root', $projectConfig->path() );
+					$data->set( 'working_dir', getcwd() );
 
 					// Store user data store in registry
 					$registry->set( 'data', $data );

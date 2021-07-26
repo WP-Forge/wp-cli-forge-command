@@ -57,7 +57,7 @@ class Scaffold {
 	 */
 	public function __construct( Container $container ) {
 		$this->container = $container;
-		$this->withSourceDir( $container->get( 'templates_dir' ) );
+		$this->withSourceDir( $container->get( 'template_dir' ) );
 		$this->withTargetDir( getcwd() );
 	}
 
