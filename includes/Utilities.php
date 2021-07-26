@@ -2,7 +2,6 @@
 
 namespace WP_Forge\Command;
 
-use WP_Forge\Helpers\Str;
 use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
 
@@ -10,22 +9,6 @@ use RecursiveIteratorIterator;
  * Class Utilities
  */
 class Utilities {
-
-	/**
-	 * Get initials from text.
-	 *
-	 * @param string $value Text to be abbreviated
-	 *
-	 * @return string
-	 */
-	public static function getInitials( $value ) {
-		$initials = array();
-		$words    = explode( '-', Str::kebab( $value ) );
-		foreach ( $words as $word ) {
-			$initials[] = substr( $word, 0, 1 );
-		}
-		return implode( $initials );
-	}
 
 	/**
 	 * Flatten an array using dot notation.
@@ -45,6 +28,42 @@ class Utilities {
 			$result[ implode( '.', $keys ) ] = $value;
 		}
 		return $result;
+	}
+
+	/**
+	 * Transform a value via a callable.
+	 *
+	 * @param mixed    $value Value to be transformed
+	 * @param callable $callable Callable to be called.
+	 *
+	 * @return mixed
+	 */
+	public static function transform( $value, $callable ) {
+		// Check for registered transforms, otherwise look for a valid callback
+		if ( method_exists( Transforms::class, $callable ) ) {
+			return call_user_func( array( Transforms::class, $callable ), $value );
+		}
+		return $callable( $value );
+	}
+
+	/**
+	 * Apply one or more transforms to a value, in order.
+	 *
+	 * @param mixed          $value Value to be transformed
+	 * @param array|callable $transforms Transforms to be called.
+	 *
+	 * @return mixed
+	 */
+	public static function applyTransforms( $value, $transforms ) {
+		if ( is_string( $transforms ) ) {
+			$transforms = (array) $transforms;
+		}
+		if ( ! empty( $transforms ) && is_array( $transforms ) ) {
+			foreach ( $transforms as $callable ) {
+				$value = self::transform( $value, $callable );
+			}
+		}
+		return $value;
 	}
 
 }

@@ -17,7 +17,12 @@ class Transforms {
 	 * @return string
 	 */
 	public static function abbreviate( $value ) {
-		return Utilities::getInitials( $value );
+		$initials = array();
+		$words    = explode( '-', Str::kebab( $value ) );
+		foreach ( $words as $word ) {
+			$initials[] = substr( $word, 0, 1 );
+		}
+		return implode( $initials );
 	}
 
 	/**
