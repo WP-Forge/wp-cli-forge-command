@@ -180,10 +180,12 @@ class Package {
 		);
 
 		$container->set(
-			'prompts',
-			$container->service(
+			'prompt',
+			$container->factory(
 				function ( Container $c ) {
-					return new Prompts( $c );
+					return function ( array $args ) use ( $c ) {
+						return ( new PromptFactory( $c ) )->make( $args );
+					};
 				}
 			)
 		);
