@@ -64,7 +64,7 @@ class MakeCommand extends AbstractCommand {
 
 		$this->config = $this
 			->config()
-			->withFileName( 'config.json' )
+			->withFileName( $this->container('template_config_filename') )
 			->withPath( $this->templatePath() );
 
 		$this->validateTemplate();
