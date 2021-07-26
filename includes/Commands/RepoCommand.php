@@ -156,7 +156,7 @@ class RepoCommand extends AbstractCommand {
 
 		$this->init( $args, $options );
 
-		$shouldDelete = $this->prompt()->confirm( 'Are you sure you want to delete this repository?' );
+		$shouldDelete = $this->cli()->confirm( 'Are you sure you want to delete this repository?' )->confirmed();
 
 		if ( $shouldDelete ) {
 

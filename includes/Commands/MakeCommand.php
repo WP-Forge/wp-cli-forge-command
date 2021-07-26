@@ -110,7 +110,7 @@ class MakeCommand extends AbstractCommand {
 		foreach ( $iterator as $dir ) {
 			if ( file_exists( $this->appendPath( $dir, $name ) ) ) {
 				$this->success( 'Found template at: ' . $this->appendPath( $dir, $name ) );
-				if ( $this->prompt()->confirm( 'Are you sure you want to use this template?' ) ) {
+				if ( $this->cli()->confirm( 'Are you sure you want to use this template?' )->confirmed() ) {
 					$namespace = basename( $dir );
 					return $this->appendPath( $namespace, $name );
 				} else {

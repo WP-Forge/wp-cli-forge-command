@@ -62,10 +62,10 @@ class TemplateCommand extends AbstractCommand {
 	 * @param DataStore $data Configuration data
 	 */
 	protected function configurePrompts( DataStore $data ) {
-		if ( $this->prompt()->confirm( 'Would you like to request data from the user?' ) ) {
-			$prompts = $this->get( 'store' );
+		if ( $this->cli()->confirm( 'Would you like to request data from the user?' )->confirmed() ) {
+			$prompts = $this->container( 'store' );
 			$this->addPrompt( $prompts );
-			while ( $this->prompt()->confirm( 'Add another prompt?' ) ) {
+			while ( $this->cli()->confirm( 'Add another prompt?' )->confirmed() ) {
 				$this->addPrompt( $prompts );
 			}
 			$data->set( 'prompts', $prompts->toArray() );
@@ -138,8 +138,8 @@ class TemplateCommand extends AbstractCommand {
 
 		// Optionally set default value, if the field type supports it
 		if ( in_array( $field->get( 'type' ), $supportsDefault, true ) ) {
-			if ( $this->prompt()->confirm( 'Set a default value?' ) ) {
-				$field->set( 'default', $this->prompt()->input( 'Default value' ) );
+			if ( $this->cli()->confirm( 'Set a default value?' )->confirmed() ) {
+				$field->set( 'default', $this->cli()->input( 'Default value' )->prompt() );
 			}
 		}
 	}
@@ -157,7 +157,7 @@ class TemplateCommand extends AbstractCommand {
 		if ( in_array( $field->get( 'type' ), $supportsOptions, true ) ) {
 			$options     = array();
 			$prompt      = 'Provide a comma separates list of options (use "key > value" syntax to set keys)';
-			$optionsList = $this->prompt()->input( $prompt );
+			$optionsList = $this->cli()->input( $prompt )->prompt();
 			$items       = explode( ',', $optionsList );
 			foreach ( $items as $index => $item ) {
 				$parts = explode( '>', $item );
