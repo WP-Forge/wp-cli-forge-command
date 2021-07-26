@@ -2,6 +2,8 @@
 
 namespace WP_Forge\Command\Commands;
 
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
 use WP_Forge\Command\AbstractCommand;
 use WP_Forge\Command\Concerns\Config;
 use WP_Forge\Command\Concerns\DependencyInjection;
@@ -94,7 +96,7 @@ class MakeCommand extends AbstractCommand {
 			$this->registry()->set( 'namespace', $namespace );
 		}
 
-		$path = $this->appendPath( $this->get( 'templates_dir' ), $namespace, $name );
+		$path = $this->appendPath( $this->container( 'templates_dir' ), $namespace, $name );
 
 		if ( file_exists( $path ) ) {
 			return $this->appendPath( $namespace, $name );
@@ -103,7 +105,7 @@ class MakeCommand extends AbstractCommand {
 		$this->warning( 'Unable to find template at: ' . $this->appendPath( $this->templatePath(), $namespace, $name ) );
 		$this->warning( 'Attempting to locate template from another location...' );
 
-		$iterator = new \RecursiveDirectoryIterator( $this->get( 'templates_dir' ), \FilesystemIterator::SKIP_DOTS );
+		$iterator = new RecursiveDirectoryIterator( $this->container( 'templates_dir' ), FilesystemIterator::SKIP_DOTS );
 
 		foreach ( $iterator as $dir ) {
 			if ( file_exists( $this->appendPath( $dir, $name ) ) ) {
@@ -185,7 +187,7 @@ class MakeCommand extends AbstractCommand {
 				 *
 				 * @var AbstractDirective $instance
 				 */
-				$instance = $this->get( 'directive' )( $args );
+				$instance = $this->container( 'directive' )( $args );
 				$instance->execute();
 
 			}
@@ -218,7 +220,7 @@ class MakeCommand extends AbstractCommand {
 	 * @return string
 	 */
 	protected function templatePath() {
-		return $this->appendPath( $this->get( 'templates_dir' ), $this->template );
+		return $this->appendPath( $this->container( 'templates_dir' ), $this->template );
 	}
 
 }

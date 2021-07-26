@@ -32,7 +32,7 @@ trait DependencyInjection {
 	 *
 	 * @return mixed
 	 */
-	protected function get( $id ) {
+	protected function container( $id ) {
 		return $this->container->get( $id );
 	}
 

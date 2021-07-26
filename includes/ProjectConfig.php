@@ -38,7 +38,7 @@ class ProjectConfig extends Config {
 		$path = getcwd();
 
 		// Get the home directory
-		$homeDir = $this->get( 'home_dir' );
+		$homeDir = $this->container( 'home_dir' );
 
 		// Search up the directory tree until we find a config or reach the home directory.
 		while ( ! $this->hasConfig( $path ) && $path !== $homeDir ) {

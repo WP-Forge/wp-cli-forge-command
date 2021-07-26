@@ -65,7 +65,7 @@ class Copy extends AbstractDirective {
 		$this->from      = data_get( $args, 'from' );
 		$this->to        = data_get( $args, 'to' );
 		$this->targetDir = data_get( $args, 'relativeTo' ) === 'projectRoot' ? $this->projectConfig()->path() : getcwd();
-		$this->sourceDir = $this->appendPath( $this->get( 'templates_dir' ), $this->registry()->get( 'template' ) );
+		$this->sourceDir = $this->appendPath( $this->container( 'templates_dir' ), $this->registry()->get( 'template' ) );
 		$this->action    = is_dir( $this->appendPath( $this->sourceDir, $this->from ) ) ? 'copyDir' : 'copyFile';
 		$this->data      = $this->registry()->get( 'data' )->toArray();
 	}

@@ -2,7 +2,6 @@
 
 namespace WP_Forge\Command;
 
-use WP_CLI;
 use WP_Forge\Command\Concerns\DependencyInjection;
 use WP_Forge\Command\Concerns\CLIOutput;
 use WP_Forge\Command\Concerns\Prompts;
@@ -53,7 +52,7 @@ abstract class AbstractCommand {
 	 * @return string
 	 */
 	protected function getCommand() {
-		return $this->get( 'base_command' ) . ' ' . static::COMMAND;
+		return $this->container( 'base_command' ) . ' ' . static::COMMAND;
 	}
 
 	/**

@@ -54,7 +54,7 @@ class RepoCommand extends AbstractCommand {
 		$name   = $this->option( 'as', 'default' );
 		$folder = $this->appendPath( 'templates', $name );
 
-		$path = $this->appendPath( $this->get( 'home_dir' ), '.wp-cli', $folder );
+		$path = $this->appendPath( $this->container( 'home_dir' ), '.wp-cli', $folder );
 
 		if ( file_exists( $path ) && ! $this->option( 'force', false ) ) {
 
@@ -66,7 +66,7 @@ class RepoCommand extends AbstractCommand {
 			if ( file_exists( $path ) ) {
 				// Clean up directory
 				$this->cli()->blue( 'Deleting existing files located at: ' . $path );
-				$this->filesystem( $this->appendPath( $this->get( 'home_dir' ), '.wp-cli' ) )->deleteDirectory( $folder );
+				$this->filesystem( $this->appendPath( $this->container( 'home_dir' ), '.wp-cli' ) )->deleteDirectory( $folder );
 			}
 
 			$branch = $this->option( 'branch', 'master' );
@@ -121,7 +121,7 @@ class RepoCommand extends AbstractCommand {
 		$name   = $this->option( 'as', 'default' );
 		$folder = $this->globalConfig()->data()->get( "templates.{$name}.path", $this->appendPath( 'templates', $name ) );
 
-		$path = $this->appendPath( $this->get( 'home_dir' ), '.wp-cli', $folder );
+		$path = $this->appendPath( $this->container( 'home_dir' ), '.wp-cli', $folder );
 
 		if ( empty( $folder ) || empty( $path ) || ! file_exists( $path ) ) {
 			$this->error( "No repository found under the name '{$name}'!", false );
@@ -163,11 +163,11 @@ class RepoCommand extends AbstractCommand {
 			$name   = $this->argument( 0, 'default' );
 			$folder = $this->globalConfig()->data()->get( "templates.{$name}.path", $this->appendPath( 'templates', $name ) );
 
-			$path = $this->appendPath( $this->get( 'home_dir' ), '.wp-cli', $folder );
+			$path = $this->appendPath( $this->container( 'home_dir' ), '.wp-cli', $folder );
 
 			// Clean up directory
 			$this->cli()->blue( 'Deleting existing files located at: ' . $path );
-			$this->filesystem( $this->appendPath( $this->get( 'home_dir' ), '.wp-cli' ) )->deleteDirectory( $folder );
+			$this->filesystem( $this->appendPath( $this->container( 'home_dir' ), '.wp-cli' ) )->deleteDirectory( $folder );
 
 			$this->globalConfig()->data()->forget( "templates.{$name}" );
 			$this->globalConfig()->save();

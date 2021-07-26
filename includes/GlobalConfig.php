@@ -19,7 +19,7 @@ class GlobalConfig extends Config {
 
 		$this
 			->withFileName( $container->get( 'global_config_filename' ) )
-			->withPath( $this->appendPath( $this->get( 'home_dir' ), '.wp-cli' ) );
+			->withPath( $this->appendPath( $this->container( 'home_dir' ), '.wp-cli' ) );
 
 		if ( $this->hasConfig() ) {
 			$this->parse();

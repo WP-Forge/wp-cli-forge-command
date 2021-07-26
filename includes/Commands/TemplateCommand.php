@@ -2,7 +2,6 @@
 
 namespace WP_Forge\Command\Commands;
 
-use FlexFields\Traits\Data;
 use WP_Forge\Command\AbstractCommand;
 use WP_Forge\Command\Concerns\Config;
 use WP_Forge\Command\Concerns\DependencyInjection;
