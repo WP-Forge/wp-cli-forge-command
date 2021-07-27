@@ -201,16 +201,7 @@ class Package {
 				}
 			)
 		);
-
-		$container->set(
-			'scaffold',
-			$container->factory(
-				function ( Container $c ) {
-					return new Scaffold( $c );
-				}
-			)
-		);
-
+		
 		$container->set(
 			'prompt',
 			$container->factory(

@@ -2,6 +2,8 @@
 
 namespace WP_Forge\Command\Concerns;
 
+use WP_Forge\Command\Scaffold;
+
 trait Scaffolding {
 
 	/**
@@ -17,7 +19,7 @@ trait Scaffolding {
 	 * @return \WP_Forge\Command\Scaffold
 	 */
 	protected function scaffold() {
-		return $this->container->get( 'scaffold' );
+	    return new Scaffold($this->container);
 	}
 
 }
