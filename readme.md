@@ -17,7 +17,8 @@ wp package install wp-forge/wp-cli-forge-command
 
 ## Usage
 
-From your project root, run the `init` command to set up a project-level configuration file.
+From your project root, run the `init` command to set up a project-level configuration file.<br>
+_*Technically, this step is optional. However, it helps to eliminate some prompts as you run make commands._
 
 ```shell
 wp forge init
@@ -123,8 +124,8 @@ A simple `config.json` file might look like this:
 }
 ```
 
-This would copy the `lint-php.yml` file from the template folder to the `.github/workflows/lint-php.yml` file
-relative to the project root. You can provide multiple copy directives to copy not only files, but also entire directories. If
+This would copy the `lint-php.yml` file from the template folder to the `.github/workflows/lint-php.yml` file relative
+to the project root. You can provide multiple copy directives to copy not only files, but also entire directories. If
 you want the path to be relative to the current directory where the CLI tool is being run, then just leave off
 the `relativeTo` property or set its value to `workingDir`.
 
@@ -175,6 +176,7 @@ any template file. You can also reference the name of any property from the proj
 without needing to prompt the user.
 
 You can have a template leverage other templates by using the `runCommand` directive and calling the `make` command:
+
 ```json
 {
   "directives": [
