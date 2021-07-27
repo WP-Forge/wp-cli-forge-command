@@ -35,6 +35,18 @@ class RepoCommand extends AbstractCommand {
 	 * default: default
 	 * ---
 	 *
+	 * [--branch=<name>]
+	 * : The branch to pull.
+	 * ---
+	 * default: master
+	 * ---
+	 *
+	 * [--remote=<name>]
+	 * : The remote name.
+	 * ---
+	 * default: origin
+	 * ---
+	 *
 	 * [--force]
 	 * : Whether or not to force override an existing repository.
 	 *
@@ -50,35 +62,35 @@ class RepoCommand extends AbstractCommand {
 		// Ensure that git is available
 		$this->gitCheck();
 
-		$url    = $this->argument();
-		$name   = $this->option( 'as', 'default' );
-		$folder = $this->appendPath( 'templates', $name );
+		$url  = $this->argument();
+		$name = $this->option( 'as', 'default' );
 
-		$path = $this->appendPath( $this->container( 'home_dir' ), '.wp-cli', $folder );
+		$path = $this->appendPath( $this->container( 'template_dir' ), $name );
 
 		if ( file_exists( $path ) && ! $this->option( 'force', false ) ) {
 
 			$this->error( 'Repository has already been cloned!', false );
-			$this->error( "Run 'wp {$this->getCommand()} update' to update.", false );
-
-		} else {
-
-			if ( file_exists( $path ) ) {
-				// Clean up directory
-				$this->cli()->blue( 'Deleting existing files located at: ' . $path );
-				$this->filesystem( $this->appendPath( $this->container( 'home_dir' ), '.wp-cli' ) )->deleteDirectory( $folder );
+			if ( ! $this->cli()->confirm( 'Do you want to overwrite the existing template files?' )->confirmed() ) {
+				exit( 1 );
 			}
-
-			$branch = $this->option( 'branch', 'master' );
-			$remote = $this->option( 'remote', 'origin' );
-
-			// Clone the repository
-			$this->gitClone( $url, $path );
-			$this->gitUpdate( $path, $branch, $remote );
 		}
 
+		if ( file_exists( $path ) ) {
+			// Clean up directory
+			$this->deleteRepo( $name );
+		}
+
+		$branch = $this->option( 'branch', 'master' );
+		$remote = $this->option( 'remote', 'origin' );
+
+		// Clone the repository
+		$this->gitClone( $url, $path );
+		$this->gitUpdate( $path, $branch, $remote );
+
 		$this->globalConfig()->data()->set( "templates.{$name}.url", $url );
-		$this->globalConfig()->data()->set( "templates.{$name}.path", $folder );
+		$this->globalConfig()->data()->set( "templates.{$name}.branch", $branch );
+		$this->globalConfig()->data()->set( "templates.{$name}.remote", $remote );
+		$this->globalConfig()->data()->set( "templates.{$name}.isSymlink", false );
 		$this->globalConfig()->save();
 
 	}
@@ -101,7 +113,7 @@ class RepoCommand extends AbstractCommand {
 	 * ---
 	 *
 	 * [--remote=<name>]
-	 * : The branch to pull.
+	 * : The remote name.
 	 * ---
 	 * default: origin
 	 * ---
@@ -118,12 +130,12 @@ class RepoCommand extends AbstractCommand {
 		// Ensure that git is available
 		$this->gitCheck();
 
-		$name   = $this->argument( 0, 'default' );
-		$folder = $this->globalConfig()->data()->get( "templates.{$name}.path", $this->appendPath( 'templates', $name ) );
+		$name = $this->argument( 0, 'default' );
 
-		$path = $this->appendPath( $this->container( 'home_dir' ), '.wp-cli', $folder );
+		$dir  = $this->container( 'template_dir' );
+		$path = $this->appendPath( $dir, $name );
 
-		if ( empty( $folder ) || empty( $path ) || ! file_exists( $path ) ) {
+		if ( empty( $name ) || ! file_exists( $path ) ) {
 			$this->error( "No repository found under the name '{$name}'!", false );
 			$this->error( "Run 'wp {$this->getCommand()} clone' to clone a new repository." );
 		}
@@ -133,6 +145,10 @@ class RepoCommand extends AbstractCommand {
 
 		// Pull the repository
 		$this->gitUpdate( $path, $branch, $remote );
+
+		$this->globalConfig()->data()->set( "templates.{$name}.branch", $branch );
+		$this->globalConfig()->data()->set( "templates.{$name}.remote", $remote );
+		$this->globalConfig()->save();
 
 	}
 
@@ -160,14 +176,9 @@ class RepoCommand extends AbstractCommand {
 
 		if ( $shouldDelete ) {
 
-			$name   = $this->argument( 0, 'default' );
-			$folder = $this->globalConfig()->data()->get( "templates.{$name}.path", $this->appendPath( 'templates', $name ) );
+			$name = $this->argument( 0, 'default' );
 
-			$path = $this->appendPath( $this->container( 'home_dir' ), '.wp-cli', $folder );
-
-			// Clean up directory
-			$this->cli()->blue( 'Deleting existing files located at: ' . $path );
-			$this->filesystem( $this->appendPath( $this->container( 'home_dir' ), '.wp-cli' ) )->deleteDirectory( $folder );
+			$this->deleteRepo( $name );
 
 			$this->globalConfig()->data()->forget( "templates.{$name}" );
 			$this->globalConfig()->save();
@@ -179,6 +190,57 @@ class RepoCommand extends AbstractCommand {
 	}
 
 	/**
+	 * Register a symlink to a template set.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <path>
+	 * : The path where your templates live.
+	 * ---
+	 * default: default
+	 * ---
+	 *
+	 * [--as=<name>]
+	 * : The name assigned to the template collection.
+	 *
+	 * @when before_wp_load
+	 *
+	 * @param array $args Command arguments
+	 * @param array $options Command options
+	 */
+	public function link( $args, $options ) {
+
+		$this->init( $args, $options );
+
+		$path = realpath( $this->argument() );
+		$name = $this->option( 'as', 'default' );
+
+		if ( ! file_exists( $path ) ) {
+			$this->error( 'Provided file path does not exist: ' . $path );
+		}
+
+		if ( ! is_dir( $path ) ) {
+			$this->error( 'Templates must live in a directory!' );
+		}
+
+		if ( file_exists( $this->appendPath( $this->container( 'template_dir' ), $name ) ) ) {
+			$this->error( 'Template directory already exists!' );
+		}
+
+		chdir( $this->container( 'template_dir' ) );
+
+		if ( ! symlink( $path, $name ) ) {
+			$this->error( 'Unable to create symlink!' );
+		}
+
+		$this->globalConfig()->data()->set( "templates.{$name}.path", $path );
+		$this->globalConfig()->data()->set( "templates.{$name}.isSymlink", true );
+		$this->globalConfig()->save();
+
+		$this->success( 'Symlink created!' );
+	}
+
+	/**
 	 * List the registered template repositories.
 	 *
 	 * @when before_wp_load
@@ -187,13 +249,47 @@ class RepoCommand extends AbstractCommand {
 	 * @param array $options Command options
 	 */
 	public function list( $args, $options ) { // phpcs:ignore PHPCompatibility.Keywords.ForbiddenNames.listFound
+
 		$this->init( $args, $options );
-		$templates = $this->globalConfig()->data()->get( 'templates' );
-		if ( $templates && is_array( $templates ) ) {
-			foreach ( $templates as $name => $data ) {
-				$url = data_get( $data, 'url' );
-				$this->out( "<yellow>{$name}</yellow>: {$url}" );
+
+		$iterator = new \RecursiveDirectoryIterator( $this->appendPath( $this->container( 'home_dir' ), '.wp-cli', 'templates' ), \RecursiveDirectoryIterator::SKIP_DOTS );
+
+		foreach ( $iterator as $item ) {
+
+			// Get full path
+			$path = $this->appendPath( $item->getPath(), $item->getFilename() );
+
+			// Switch to directory
+			chdir( $path );
+
+			// Get the Git URL
+			$remote = $this->globalConfig()->data()->get( "templates.{$item->getFilename()}.remote", 'origin' );
+			$url    = trim( shell_exec( "git config --get remote.{$remote}.url" ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
+
+			// If path is a symlink, return that instead
+			if ( is_link( $path ) ) {
+				$url = readlink( $path );
 			}
+
+			$this->out( "<yellow>{$item->getFilename()}</yellow>: {$url}" );
+		}
+	}
+
+	/**
+	 * Delete a repo by name.
+	 *
+	 * @param string $name Name of the repo to be deleted
+	 */
+	protected function deleteRepo( $name ) {
+		$dir  = $this->container( 'template_dir' );
+		$path = $this->appendPath( $dir, $name );
+
+		$this->cli()->blue( 'Deleting existing files located at: ' . $path );
+
+		if ( is_link( $path ) ) {
+			$this->filesystem( $dir )->delete( $name );
+		} else {
+			$this->filesystem( $dir )->deleteDirectory( $name );
 		}
 	}
 
