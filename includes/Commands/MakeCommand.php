@@ -74,8 +74,7 @@ class MakeCommand extends AbstractCommand {
 
 		// Make current template directory available to templates
 		$this
-			->registry()
-			->get( 'data' )
+			->container( 'data' )
 			->set(
 				'template_dir',
 				$this->appendPath( $this->container( 'template_dir' ), $this->template )
@@ -170,7 +169,7 @@ class MakeCommand extends AbstractCommand {
 			 *
 			 * @var \WP_Forge\DataStore\DataStore $data
 			 */
-			$data = $this->registry()->get( 'data' );
+			$data = $this->container( 'data' );
 
 			$promptHandler = $this->prompts()->populate( $prompts );
 			$promptHandler->store()->put( $data->toArray() );

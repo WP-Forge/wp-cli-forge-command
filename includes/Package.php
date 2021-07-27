@@ -12,6 +12,7 @@ use ReflectionClass;
 use WP_CLI;
 use WP_Forge\Command\Commands\RepoCommand;
 use WP_Forge\Command\Concerns\CLIOutput;
+use WP_Forge\Command\Concerns\DependencyInjection;
 use WP_Forge\Command\Directives\DirectiveFactory;
 use WP_Forge\Command\Prompts\PromptFactory;
 use WP_Forge\Command\Prompts\PromptHandler;
@@ -38,14 +39,16 @@ class Package {
 	 * @param array $args Arguments to be injected into the container.
 	 */
 	public function __construct( array $args = array() ) {
-
-		// Setup dependency injection container
 		$this->setup_container( $args );
-
-		// Register available commands
+		$this->configure();
 		$this->registerCommands();
+	}
 
-		// Run code on shutdown
+	/**
+	 * Do some configuration before registering the commands.
+	 */
+	public function configure() {
+
 		register_shutdown_function( array( $this, 'onShutdown' ) );
 
 		/**
@@ -55,12 +58,9 @@ class Package {
 		 */
 		$globalConfig = $this->container->get( 'global_config' );
 
-		// Get the URL for the default template repository
-		$defaultTemplateRepo = $this->container->get( 'default_template_repo' );
-
 		// If no default template repo exists in the global config, then set it (allows a user to set a new default).
 		if ( ! $globalConfig->data()->has( 'default_template_repo' ) ) {
-			$globalConfig->data()->set( 'default_template_repo', $defaultTemplateRepo );
+			$globalConfig->data()->set( 'default_template_repo', $this->container->get( 'default_template_repo' ) );
 			$globalConfig->save();
 		}
 
@@ -68,7 +68,33 @@ class Package {
 		if ( ! file_exists( $this->getTemplatesDir() . DIRECTORY_SEPARATOR . 'default' ) ) {
 			( new RepoCommand( $this->container ) )->clone( array( $globalConfig->data()->get( 'default_template_repo' ) ), array() );
 		}
-	}
+
+        // Allow the base command to be customized
+        if ( $globalConfig->data()->has( 'base_command' ) ) {
+            $this->container->set( 'base_command', $globalConfig->data()->get( 'base_command' ) );
+        }
+
+        /**
+         * Get the project config.
+         *
+         * @var ProjectConfig $projectConfig
+         */
+        $projectConfig = $this->container->get( 'project_config' );
+
+        // Get data store for collected user data
+        $data = $this->container->get('data');
+
+        // Pre-populate user data with project settings
+        $data->put( $projectConfig->data()->toArray() );
+
+        // Also make important paths available
+        $data->set( 'project_root', $projectConfig->path() );
+        $data->set( 'working_dir', getcwd() );
+
+        // Make the base command available
+        $data->set('base_command', $this->container->get('base_command'));
+
+    }
 
 	/**
 	 * Setup dependency injection container.
@@ -76,6 +102,7 @@ class Package {
 	 * @param array $args Arguments to be injected into the container.
 	 */
 	public function setup_container( array $args = array() ) {
+
 		$container = new Container(
 			array_merge(
 				array(
@@ -163,32 +190,8 @@ class Package {
 		$container->set(
 			'registry',
 			$container->service(
-				function ( Container $c ) {
-
-					// Create global registry
-					$registry = new DataStore();
-
-					// Create store for collected user data
-					$data = new DataStore();
-
-					/**
-					 * Project configuration
-					 *
-					 * @var ProjectConfig $projectConfig
-					 */
-					$projectConfig = $c->get( 'project_config' );
-
-					// Pre-populate user data with project settings
-					$data->put( $projectConfig->data()->toArray() );
-
-					// Also make important paths available
-					$data->set( 'project_root', $projectConfig->path() );
-					$data->set( 'working_dir', getcwd() );
-
-					// Store user data store in registry
-					$registry->set( 'data', $data );
-
-					return $registry;
+				function () {
+					return new DataStore();
 				}
 			)
 		);
@@ -201,7 +204,17 @@ class Package {
 				}
 			)
 		);
-		
+
+		// Used to store all data collected from the user and persist across commands
+		$container->set(
+			'data',
+			$container->service(
+				function () {
+					return new DataStore();
+				}
+			)
+		);
+
 		$container->set(
 			'prompt',
 			$container->factory(
