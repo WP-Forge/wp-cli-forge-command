@@ -6,6 +6,7 @@ use WP_Forge\Command\AbstractCommand;
 use WP_Forge\Command\Concerns\Config;
 use WP_Forge\Command\Concerns\DependencyInjection;
 use WP_Forge\Command\Concerns\Filesystem;
+use WP_Forge\Command\Templates\TemplateFinder;
 use WP_Forge\DataStore\DataStore;
 
 /**
@@ -54,6 +55,44 @@ class TemplateCommand extends AbstractCommand {
 
 		$config->save();
 
+	}
+
+	/**
+	 * List available templates.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--name=<name>]
+	 * : List templates available under a specific namespace.
+	 * ---
+	 * default: default
+	 * ---
+	 *
+	 * @when before_wp_load
+	 *
+	 * @subcommand list
+	 *
+	 * @param array $args Command arguments
+	 * @param array $options Command options
+	 */
+	public function list_( $args, $options ) {
+
+		$this->init( $args, $options );
+
+		$templates = ( new TemplateFinder( $this->container ) )->find();
+
+		foreach ( $templates as $template ) {
+			$relativePath = str_replace( $this->container( 'template_dir' ) . DIRECTORY_SEPARATOR, '', $template );
+			$parts        = explode( DIRECTORY_SEPARATOR, $relativePath, 2 );
+			$namespace    = data_get( $parts, 0 );
+			$name         = data_get( $parts, 1 );
+			if ( 'default' === $namespace ) {
+				$namespace = '';
+			} else {
+				$namespace .= ':';
+			}
+			$this->out( $namespace . $name );
+		}
 	}
 
 	/**
@@ -156,7 +195,7 @@ class TemplateCommand extends AbstractCommand {
 		// Check if a field requires options
 		if ( in_array( $field->get( 'type' ), $supportsOptions, true ) ) {
 			$options     = array();
-			$prompt      = 'Provide a comma separates list of options (use "key > value" syntax to set keys)';
+			$prompt      = 'Provide a comma separated list of options (use "key > value" syntax to set keys)';
 			$optionsList = $this->cli()->input( $prompt )->prompt();
 			$items       = explode( ',', $optionsList );
 			foreach ( $items as $index => $item ) {
