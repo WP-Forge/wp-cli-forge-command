@@ -197,10 +197,12 @@ class ConfigCommand extends AbstractCommand {
 	 *
 	 * @when before_wp_load
 	 *
+	 * @subcommand list
+	 *
 	 * @param array $args Command arguments
 	 * @param array $options Command options
 	 */
-	public function list( $args, $options ) { // phpcs:ignore PHPCompatibility.Keywords.ForbiddenNames.listFound
+	public function list_( $args, $options ) {
 		$this->init( $args, $options );
 		$format = $this->option( 'format', 'json' );
 
