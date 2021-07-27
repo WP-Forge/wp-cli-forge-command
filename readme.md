@@ -9,20 +9,13 @@ follow a specific convention.
 
 1. [Install WP-CLI](https://wp-cli.org/#installing)
 
-2. Run:
+2. Install this WP-CLI package:
 
 ```shell
 wp package install wp-forge/wp-cli-forge-command
 ```
 
 ## Usage
-
-Clone a Git repository containing [scaffolding templates](#scaffolding-templates) so they will be locally available to
-the tool.
-
-```shell
-wp forge clone <repository_url>
-```
 
 From your project root, run the `init` command to set up a project-level configuration file.
 
@@ -37,6 +30,13 @@ wp forge make <name>
 ```
 
 ## Advanced Usage
+
+Clone a Git repository containing [scaffolding templates](#scaffolding-templates) so they will be locally available to
+the tool.
+
+```shell
+wp forge clone <repository_url>
+```
 
 When cloning a repository, you can optionally provide a name. This allows you to utilize multiple repositories
 containing scaffolding templates from various sources. If you do not set a name, the system will use the name "default"
