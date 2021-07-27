@@ -49,8 +49,8 @@ class Package {
 		register_shutdown_function( array( $this, 'onShutdown' ) );
 
 		/**
-         * Get the global config.
-         *
+		 * Get the global config.
+		 *
 		 * @var GlobalConfig $globalConfig
 		 */
 		$globalConfig = $this->container->get( 'global_config' );
