@@ -10,6 +10,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionClass;
 use WP_CLI;
+use WP_Forge\Command\Commands\RepoCommand;
 use WP_Forge\Command\Concerns\CLIOutput;
 use WP_Forge\Command\Directives\DirectiveFactory;
 use WP_Forge\Command\Prompts\PromptFactory;
@@ -37,9 +38,36 @@ class Package {
 	 * @param array $args Arguments to be injected into the container.
 	 */
 	public function __construct( array $args = array() ) {
+
+		// Setup dependency injection container
 		$this->setup_container( $args );
+
+		// Register available commands
 		$this->registerCommands();
+
+		// Run code on shutdown
 		register_shutdown_function( array( $this, 'onShutdown' ) );
+
+		/**
+         * Get the global config.
+         *
+		 * @var GlobalConfig $globalConfig
+		 */
+		$globalConfig = $this->container->get( 'global_config' );
+
+		// Get the URL for the default template repository
+		$defaultTemplateRepo = $this->container->get( 'default_template_repo' );
+
+		// If no default template repo exists in the global config, then set it (allows a user to set a new default).
+		if ( ! $globalConfig->data()->has( 'default_template_repo' ) ) {
+			$globalConfig->data()->set( 'default_template_repo', $defaultTemplateRepo );
+			$globalConfig->save();
+		}
+
+		// If there are no templates yet, clone the default repo
+		if ( ! file_exists( $this->getTemplatesDir() ) ) {
+			( new RepoCommand( $this->container ) )->clone( array( $globalConfig->data()->get( 'default_template_repo' ) ), array() );
+		}
 	}
 
 	/**
@@ -245,6 +273,7 @@ class Package {
 	 * Shutdown callback.
 	 */
 	public function onShutdown() {
+		// Display any registered messages
 		$this->displayMessages();
 	}
 
