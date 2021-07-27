@@ -87,6 +87,11 @@ class RepoCommand extends AbstractCommand {
 		$this->gitClone( $url, $path );
 		$this->gitUpdate( $path, $branch, $remote );
 
+		if ( 'default' === $name ) {
+			// Sets the repo that should be auto-cloned in the event that the default templates are deleted
+			$this->globalConfig()->data()->set( 'default_template_repo', $url );
+		}
+
 		$this->globalConfig()->data()->set( "templates.{$name}.url", $url );
 		$this->globalConfig()->data()->set( "templates.{$name}.branch", $branch );
 		$this->globalConfig()->data()->set( "templates.{$name}.remote", $remote );
