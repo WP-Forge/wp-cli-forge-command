@@ -64,8 +64,8 @@ class Package {
 			$globalConfig->save();
 		}
 
-		// If there are no templates yet, clone the default repo
-		if ( ! file_exists( $this->getTemplatesDir() ) ) {
+		// If there are no default templates, clone the default repo
+		if ( ! file_exists( $this->getTemplatesDir() . DIRECTORY_SEPARATOR . 'default' ) ) {
 			( new RepoCommand( $this->container ) )->clone( array( $globalConfig->data()->get( 'default_template_repo' ) ), array() );
 		}
 	}
