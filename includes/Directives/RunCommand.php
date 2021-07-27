@@ -64,7 +64,7 @@ class RunCommand extends AbstractDirective {
 		if ( Str::startsWith( $this->command, array( 'wp', $this->container( 'base_command' ) ) ) ) {
 
 			// Run a WP-CLI command
-			WP_CLI::RunCommand(
+			WP_CLI::runcommand(
 				Str::replaceFirst( 'wp ', '', $this->command ), // Remove 'wp' portion of command
 				array(
 					'launch' => false, // Use the existing process
