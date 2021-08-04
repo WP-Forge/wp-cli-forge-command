@@ -19,7 +19,7 @@ trait Scaffolding {
 	 * @return \WP_Forge\Command\Scaffold
 	 */
 	protected function scaffold() {
-	    return new Scaffold($this->container);
+		return new Scaffold( $this->container );
 	}
 
 }

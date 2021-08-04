@@ -28,7 +28,7 @@ trait Filesystem {
 	/**
 	 * Safely append to a path.
 	 *
-	 * @param string $path Path
+	 * @param string $path   Path
 	 * @param string $append Path to be appended
 	 *
 	 * @return string
@@ -37,7 +37,26 @@ trait Filesystem {
 		$args = func_get_args();
 		array_shift( $args );
 		$append = implode( DIRECTORY_SEPARATOR, $args );
+
 		return rtrim( $path, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . $append;
+	}
+
+	/**
+	 * Safely get a path segment by index.
+	 *
+	 * @param string $path    Path
+	 * @param int    $index   Segment index
+	 * @param mixed  $default Default value if segment doesn't exist
+	 *
+	 * @return string
+	 */
+	protected function getPathSegment( $path, $index = 0, $default = null ) {
+		$segments = empty( $path ) ? array() : array_filter( explode( DIRECTORY_SEPARATOR, $path ) );
+		if ( array_key_exists( $index, $segments ) ) {
+			return $segments[ $index ];
+		}
+
+		return $default;
 	}
 
 }

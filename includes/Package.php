@@ -16,6 +16,7 @@ use WP_Forge\Command\Concerns\DependencyInjection;
 use WP_Forge\Command\Directives\DirectiveFactory;
 use WP_Forge\Command\Prompts\PromptFactory;
 use WP_Forge\Command\Prompts\PromptHandler;
+use WP_Forge\Command\Templates\TemplateFinder;
 use WP_Forge\Container\Container;
 use WP_Forge\DataStore\DataStore;
 
@@ -69,32 +70,32 @@ class Package {
 			( new RepoCommand( $this->container ) )->clone( array( $globalConfig->data()->get( 'default_template_repo' ) ), array() );
 		}
 
-        // Allow the base command to be customized
-        if ( $globalConfig->data()->has( 'base_command' ) ) {
-            $this->container->set( 'base_command', $globalConfig->data()->get( 'base_command' ) );
-        }
+		// Allow the base command to be customized
+		if ( $globalConfig->data()->has( 'base_command' ) ) {
+			$this->container->set( 'base_command', $globalConfig->data()->get( 'base_command' ) );
+		}
 
-        /**
-         * Get the project config.
-         *
-         * @var ProjectConfig $projectConfig
-         */
-        $projectConfig = $this->container->get( 'project_config' );
+		/**
+		 * Get the project config.
+		 *
+		 * @var ProjectConfig $projectConfig
+		 */
+		$projectConfig = $this->container->get( 'project_config' );
 
-        // Get data store for collected user data
-        $data = $this->container->get('data');
+		// Get data store for collected user data
+		$data = $this->container->get( 'data' );
 
-        // Pre-populate user data with project settings
-        $data->put( $projectConfig->data()->toArray() );
+		// Pre-populate user data with project settings
+		$data->put( $projectConfig->data()->toArray() );
 
-        // Also make important paths available
-        $data->set( 'project_root', $projectConfig->path() );
-        $data->set( 'working_dir', getcwd() );
+		// Also make important paths available
+		$data->set( 'project_root', $projectConfig->path() );
+		$data->set( 'working_dir', getcwd() );
 
-        // Make the base command available
-        $data->set('base_command', $this->container->get('base_command'));
+		// Make the base command available
+		$data->set( 'base_command', $this->container->get( 'base_command' ) );
 
-    }
+	}
 
 	/**
 	 * Setup dependency injection container.
@@ -242,6 +243,15 @@ class Package {
 					return function ( array $args ) use ( $c ) {
 						return ( new DirectiveFactory( $c ) )->make( $args );
 					};
+				}
+			)
+		);
+
+		$container->set(
+			'template_finder',
+			$container->service(
+				function ( Container $c ) {
+					return new TemplateFinder( $c );
 				}
 			)
 		);

@@ -6,7 +6,7 @@ use WP_Forge\Command\AbstractCommand;
 use WP_Forge\Command\Concerns\Config;
 use WP_Forge\Command\Concerns\DependencyInjection;
 use WP_Forge\Command\Concerns\Filesystem;
-use WP_Forge\Command\Templates\TemplateFinder;
+use WP_Forge\Command\Concerns\Templates;
 use WP_Forge\DataStore\DataStore;
 
 /**
@@ -14,7 +14,7 @@ use WP_Forge\DataStore\DataStore;
  */
 class TemplateCommand extends AbstractCommand {
 
-	use DependencyInjection, Config, Filesystem;
+	use DependencyInjection, Config, Filesystem, Templates;
 
 	/**
 	 * Command name.
@@ -79,7 +79,7 @@ class TemplateCommand extends AbstractCommand {
 
 		$this->init( $args, $options );
 
-		$templates = ( new TemplateFinder( $this->container ) )->find();
+		$templates = $this->templates()->all();
 
 		foreach ( $templates as $template ) {
 			$relativePath = str_replace( $this->container( 'template_dir' ) . DIRECTORY_SEPARATOR, '', $template );

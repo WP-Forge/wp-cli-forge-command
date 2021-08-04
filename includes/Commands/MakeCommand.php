@@ -2,13 +2,12 @@
 
 namespace WP_Forge\Command\Commands;
 
-use FilesystemIterator;
-use RecursiveDirectoryIterator;
 use WP_Forge\Command\AbstractCommand;
 use WP_Forge\Command\Concerns\Config;
 use WP_Forge\Command\Concerns\DependencyInjection;
 use WP_Forge\Command\Concerns\Filesystem;
 use WP_Forge\Command\Concerns\Scaffolding;
+use WP_Forge\Command\Concerns\Templates;
 use WP_Forge\Command\Directives\AbstractDirective;
 
 /**
@@ -16,7 +15,7 @@ use WP_Forge\Command\Directives\AbstractDirective;
  */
 class MakeCommand extends AbstractCommand {
 
-	use DependencyInjection, Config, Filesystem, Scaffolding;
+	use DependencyInjection, Config, Filesystem, Scaffolding, Templates;
 
 	/**
 	 * Command name.
@@ -52,7 +51,7 @@ class MakeCommand extends AbstractCommand {
 	 *
 	 * @when before_wp_load
 	 *
-	 * @param array $args Command arguments
+	 * @param array $args    Command arguments
 	 * @param array $options Command options
 	 */
 	public function __invoke( $args, $options ) {
@@ -97,33 +96,32 @@ class MakeCommand extends AbstractCommand {
 
 		$parts = explode( ':', $this->argument(), 2 );
 
-		$name      = array_pop( $parts );
+		$path      = array_pop( $parts );
 		$namespace = $this->registry()->get( 'namespace', data_get( $parts, '0', 'default' ) );
 
 		if ( ! $this->registry()->has( 'namespace' ) ) {
 			$this->registry()->set( 'namespace', $namespace );
 		}
 
-		$path = $this->appendPath( $this->container( 'template_dir' ), $namespace, $name );
+		$template = $this->templates()->get( $path, $namespace );
 
-		if ( file_exists( $path ) ) {
-			return $this->appendPath( $namespace, $name );
+		if ( ! empty( $template ) ) {
+			return $this->appendPath( $namespace, $path );
 		}
 
-		$this->warning( 'Unable to find template at: ' . $this->appendPath( $this->templatePath(), $namespace, $name ) );
+		$this->warning( 'Unable to find template at: ' . $this->appendPath( $this->templatePath(), $namespace, $path ) );
 		$this->warning( 'Attempting to locate template from another location...' );
 
-		$iterator = new RecursiveDirectoryIterator( $this->container( 'template_dir' ), FilesystemIterator::SKIP_DOTS );
+		$templates = $this->templates()->findByPath( $path );
 
-		foreach ( $iterator as $dir ) {
-			if ( file_exists( $this->appendPath( $dir, $name ) ) ) {
-				$this->success( 'Found template at: ' . $this->appendPath( $dir, $name ) );
-				if ( $this->cli()->confirm( 'Are you sure you want to use this template?' )->confirmed() ) {
-					$namespace = basename( $dir );
-					return $this->appendPath( $namespace, $name );
-				} else {
-					continue;
-				}
+		foreach ( $templates as $key => $template ) {
+			$parts     = explode( ':', $key, 2 );
+			$namespace = array_shift( $parts );
+			$this->success( 'Found template at: ' . $this->appendPath( $namespace, $path ) );
+			if ( $this->cli()->confirm( 'Are you sure you want to use this template?' )->confirmed() ) {
+				return $this->appendPath( $namespace, $path );
+			} else {
+				continue;
 			}
 		}
 
