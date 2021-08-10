@@ -57,6 +57,15 @@ class TemplateFinder {
 	}
 
 	/**
+	 * Get the keys for all available templates.
+	 *
+	 * @return string[]
+	 */
+	public function keys() {
+		return array_keys( $this->all() );
+	}
+
+	/**
 	 * Get a template's full path based on the relative path and namespace.
 	 *
 	 * @param string $path      Relative path
