@@ -33,7 +33,7 @@ class TemplateCommand extends AbstractCommand {
 	 *
 	 * @when before_wp_load
 	 *
-	 * @param array $args Command arguments
+	 * @param array $args    Command arguments
 	 * @param array $options Command options
 	 */
 	public function create( $args, $options ) {
@@ -68,30 +68,28 @@ class TemplateCommand extends AbstractCommand {
 	 * default: default
 	 * ---
 	 *
-	 * @when before_wp_load
+	 * @when       before_wp_load
 	 *
 	 * @subcommand list
 	 *
-	 * @param array $args Command arguments
+	 * @param array $args    Command arguments
 	 * @param array $options Command options
 	 */
 	public function list_( $args, $options ) {
 
 		$this->init( $args, $options );
 
-		$templates = $this->templates()->all();
+		$templates = $this->templates()->keys();
+
+		asort( $templates );
 
 		foreach ( $templates as $template ) {
-			$relativePath = str_replace( $this->container( 'template_dir' ) . DIRECTORY_SEPARATOR, '', $template );
-			$parts        = explode( DIRECTORY_SEPARATOR, $relativePath, 2 );
-			$namespace    = data_get( $parts, 0 );
-			$name         = data_get( $parts, 1 );
-			if ( 'default' === $namespace ) {
-				$namespace = '';
-			} else {
-				$namespace .= ':';
+
+			if ( 0 === strpos( $template, 'default:' ) ) {
+				$template = str_replace( 'default:', '', $template );
 			}
-			$this->out( $namespace . $name );
+
+			$this->out( $template );
 		}
 	}
 
