@@ -100,7 +100,7 @@ class TemplateCommand extends AbstractCommand {
 	 */
 	protected function configurePrompts( DataStore $data ) {
 		if ( $this->cli()->confirm( 'Would you like to request data from the user?' )->confirmed() ) {
-			$prompts = $this->container( 'store' );
+			$prompts = new DataStore();
 			$this->addPrompt( $prompts );
 			while ( $this->cli()->confirm( 'Add another prompt?' )->confirmed() ) {
 				$this->addPrompt( $prompts );

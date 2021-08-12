@@ -43,7 +43,7 @@ class Config {
 	 */
 	public function __construct( Container $container ) {
 		$this->container = $container;
-		$this->data      = $container->get( 'store' );
+		$this->data      = new DataStore();
 	}
 
 	/**

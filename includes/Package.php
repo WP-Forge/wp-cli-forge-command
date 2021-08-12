@@ -197,15 +197,6 @@ class Package {
 			)
 		);
 
-		$container->set(
-			'store',
-			$container->factory(
-				function () {
-					return new DataStore();
-				}
-			)
-		);
-
 		// Used to store all data collected from the user and persist across commands
 		$container->set(
 			'data',

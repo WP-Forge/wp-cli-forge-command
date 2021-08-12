@@ -42,7 +42,7 @@ class PromptHandler {
 	 */
 	public function __construct( Container $container ) {
 		$this->container = $container;
-		$this->store     = $container->get( 'store' );
+		$this->store     = new DataStore();
 	}
 
 	/**
@@ -59,19 +59,21 @@ class PromptHandler {
 		$prompt = $this->container->get( 'prompt' )( $args );
 		$prompt->withData( $this->store );
 		array_push( $this->prompts, $prompt );
+
 		return $this;
 	}
 
 	/**
 	 * Set all prompts.
 	 *
-	 * @param array $prompts Collection of prompts
+	 * @param array[] $prompts Collection of prompts
 	 */
 	public function populate( array $prompts ) {
 		$this->store->reset();
 		foreach ( $prompts as $args ) {
 			$this->add( $args );
 		}
+
 		return $this;
 	}
 
