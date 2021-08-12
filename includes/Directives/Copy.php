@@ -58,17 +58,28 @@ class Copy extends AbstractDirective {
 	protected $data = array();
 
 	/**
+	 * A list of file paths to be excluded.
+	 *
+	 * @var string[]
+	 */
+	protected $exclusions = array();
+
+	/**
 	 * Initialize properties for the directive.
 	 *
 	 * @param array $args Directive arguments.
 	 */
 	public function initialize( array $args ) {
-		$this->from      = data_get( $args, 'from' );
-		$this->to        = data_get( $args, 'to' );
-		$this->targetDir = data_get( $args, 'relativeTo' ) === 'projectRoot' ? $this->projectConfig()->path() : getcwd();
-		$this->sourceDir = $this->appendPath( $this->container( 'template_dir' ), $this->registry()->get( 'template' ) );
-		$this->action    = is_dir( $this->appendPath( $this->sourceDir, $this->from ) ) ? 'copyDir' : 'copyFile';
-		$this->data      = $this->container( 'data' )->toArray();
+		$this->from       = data_get( $args, 'from' );
+		$this->to         = data_get( $args, 'to' );
+		$this->targetDir  = data_get( $args, 'relativeTo' ) === 'projectRoot' ? $this->projectConfig()->path() : getcwd();
+		$this->sourceDir  = $this->appendPath( $this->container( 'template_dir' ), $this->registry()->get( 'template' ) );
+		$this->action     = is_dir( $this->appendPath( $this->sourceDir, $this->from ) ) ? 'copyDir' : 'copyFile';
+		$this->data       = $this->container( 'data' )->toArray();
+		$this->exclusions = data_get( $args, 'exclude' );
+
+		// Always exclude scaffolding template config files
+		$this->exclusions[] = $this->container( 'template_config_filename' );
 	}
 
 	/**
@@ -101,6 +112,7 @@ class Copy extends AbstractDirective {
 			->withSourceDir( $this->sourceDir )
 			->withTargetDir( $this->targetDir )
 			->overwrite( $this->shouldOverwrite() )
+			->exclude( $this->exclusions )
 			->{$this->action}( $this->from, $this->to, $this->data );
 	}
 

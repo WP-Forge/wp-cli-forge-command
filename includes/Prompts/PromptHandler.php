@@ -87,7 +87,7 @@ class PromptHandler {
 	 * @param array[] $prompts Collection of prompts
 	 */
 	public function populate( array $prompts ) {
-		$this->prompts = [];
+		$this->prompts = array();
 		foreach ( $prompts as $args ) {
 			$this->add( $args );
 		}

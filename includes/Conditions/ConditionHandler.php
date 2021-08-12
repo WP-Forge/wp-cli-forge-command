@@ -18,7 +18,7 @@ class ConditionHandler {
 	 *
 	 * @var AbstractCondition[]
 	 */
-	protected $conditions = [];
+	protected $conditions = array();
 
 	/**
 	 * Dependency injection container.
@@ -90,7 +90,7 @@ class ConditionHandler {
 	 * @return $this
 	 */
 	public function populate( array $conditions ) {
-		$this->conditions = [];
+		$this->conditions = array();
 		foreach ( $conditions as $args ) {
 			$this->add( $args );
 		}
@@ -100,6 +100,10 @@ class ConditionHandler {
 
 	/**
 	 * Evaluate all conditions.
+	 *
+	 * @param string $relation Condition relationship
+	 *
+	 * @return bool
 	 */
 	public function evaluate( $relation = 'AND' ) {
 		$result = 'AND' === $relation ? true : false;

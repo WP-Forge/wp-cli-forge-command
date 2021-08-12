@@ -51,6 +51,13 @@ class Scaffold {
 	protected $overwrite = false;
 
 	/**
+	 * A list of paths to exclude.
+	 *
+	 * @var string[]
+	 */
+	protected $exclusions = array();
+
+	/**
 	 * Scaffold constructor.
 	 *
 	 * @param Container $container Container instance
@@ -71,6 +78,7 @@ class Scaffold {
 	public function withSourceDir( $source ) {
 		$this->sourceDir = $source;
 		$this->source    = $this->filesystem( $source );
+
 		return $this;
 	}
 
@@ -84,6 +92,20 @@ class Scaffold {
 	public function withTargetDir( $target ) {
 		$this->targetDir = $target;
 		$this->target    = $this->filesystem( $target );
+
+		return $this;
+	}
+
+	/**
+	 * Set file paths to be excluded.
+	 *
+	 * @param string[] $exclusions Paths to be excluded
+	 *
+	 * @return $this
+	 */
+	public function exclude( array $exclusions ) {
+		$this->exclusions = $exclusions;
+
 		return $this;
 	}
 
@@ -96,6 +118,7 @@ class Scaffold {
 	 */
 	public function overwrite( $overwrite = true ) {
 		$this->overwrite = $overwrite;
+
 		return $this;
 	}
 
@@ -103,7 +126,7 @@ class Scaffold {
 	 * Copy a directory, replacing placeholders as needed.
 	 *
 	 * @param string $from Source path
-	 * @param string $to Target path
+	 * @param string $to   Target path
 	 * @param array  $data Data for replacements
 	 *
 	 * @return $this
@@ -113,6 +136,11 @@ class Scaffold {
 		$files = $this->source->listContents( $from )->toArray();
 
 		foreach ( $files as $item ) {
+
+			if ( in_array( $item->path(), $this->exclusions, true ) ) {
+				continue;
+			}
+
 			$targetPath = $this->appendPath( $to, $item->path() );
 
 			if ( $item->isFile() ) {
@@ -123,6 +151,7 @@ class Scaffold {
 				$this->copyDir( $item->path(), rtrim( $base, DIRECTORY_SEPARATOR ), $data );
 			}
 		}
+
 		return $this;
 	}
 
@@ -130,7 +159,7 @@ class Scaffold {
 	 * Copy a file, replacing placeholders as needed.
 	 *
 	 * @param string $from Source path
-	 * @param string $to Target path
+	 * @param string $to   Target path
 	 * @param array  $data Data for replacements
 	 *
 	 * @return $this
@@ -139,6 +168,7 @@ class Scaffold {
 		$file = $this->appendPath( $this->targetDir, $to );
 		if ( file_exists( $file ) && ! $this->overwrite ) {
 			$this->cli()->lightGray( 'File exists, skipping: ' . $to );
+
 			return $this;
 		}
 		if ( ! file_exists( $this->appendPath( $this->sourceDir, $from ) ) ) {
@@ -148,6 +178,7 @@ class Scaffold {
 		$content = $this->replace( $raw, $data );
 		$this->target->write( $to, $content );
 		$this->out( "Created <green>{$to}</green>" );
+
 		return $this;
 	}
 
