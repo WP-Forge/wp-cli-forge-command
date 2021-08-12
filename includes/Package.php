@@ -115,7 +115,7 @@ class Package {
 		);
 
 		$container->set(
-			'climate',
+			'cli',
 			$container->service(
 				function () {
 					return new CLImate();

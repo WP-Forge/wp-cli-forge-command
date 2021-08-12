@@ -22,7 +22,7 @@ trait CLIOutput {
 	 * @return CLImate
 	 */
 	protected function cli() {
-		return $this->container->get( 'climate' );
+		return $this->container->get( 'cli' );
 	}
 
 	/**
