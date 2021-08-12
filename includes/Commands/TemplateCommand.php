@@ -154,7 +154,7 @@ class TemplateCommand extends AbstractCommand {
 				)
 			)
 			->render()
-			->data();
+			->store();
 
 		$this->promptForDefault( $field );
 		$this->promptForOptions( $field );
