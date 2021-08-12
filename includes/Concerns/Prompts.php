@@ -2,6 +2,8 @@
 
 namespace WP_Forge\Command\Concerns;
 
+use WP_Forge\Command\Prompts\PromptHandler;
+
 trait Prompts {
 
 	/**
@@ -14,10 +16,10 @@ trait Prompts {
 	/**
 	 * Gets the PromptHandler class for configuring bulk prompts and managing the data.
 	 *
-	 * @return \WP_Forge\Command\Prompts\PromptHandler
+	 * @return PromptHandler
 	 */
 	protected function prompts() {
-		return $this->container->get( 'prompt_handler' );
+		return new PromptHandler( $this->container );
 	}
 
 }

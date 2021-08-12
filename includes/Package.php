@@ -219,15 +219,6 @@ class Package {
 		);
 
 		$container->set(
-			'prompt_handler',
-			$container->factory(
-				function ( Container $c ) {
-					return new PromptHandler( $c );
-				}
-			)
-		);
-
-		$container->set(
 			'directive',
 			$container->factory(
 				function ( Container $c ) {
