@@ -2,11 +2,13 @@
 
 use WP_Forge\Command\Package;
 
-if ( ! class_exists( 'WP_CLI' ) || ! is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
+if ( ! class_exists( 'WP_CLI' ) ) {
 	return;
 }
 
-require __DIR__ . '/vendor/autoload.php';
+if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+	require __DIR__ . '/vendor/autoload.php';
+}
 
 new Package(
 	array(
