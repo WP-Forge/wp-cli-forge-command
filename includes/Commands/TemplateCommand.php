@@ -199,11 +199,11 @@ class TemplateCommand extends AbstractCommand {
 			foreach ( $items as $index => $item ) {
 				$parts = explode( '>', $item );
 				$value = trim( array_pop( $parts ) );
-				$key   = trim( array_shift( $parts ) );
+				$key   = array_shift( $parts );
 				if ( is_null( $key ) ) {
-					$key = $index;
+					$key = $value;
 				}
-				$options[ $key ] = $value;
+				$options[ trim( $key ) ] = $value;
 			}
 			$field->set( 'options', $options );
 		}
