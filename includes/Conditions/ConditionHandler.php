@@ -1,18 +1,24 @@
 <?php
 
-namespace WP_Forge\Command\Prompts;
+namespace WP_Forge\Command\Conditions;
 
 use WP_Forge\Command\Concerns\CLIOutput;
-use WP_Forge\Command\Concerns\Mustache;
 use WP_Forge\Container\Container;
 use WP_Forge\DataStore\DataStore;
 
 /**
- * Class PromptHandler
+ * Class ConditionHandler
  */
-class PromptHandler {
+class ConditionHandler {
 
-	use CLIOutput, Mustache;
+	use CLIOutput;
+
+	/**
+	 * A collection of conditions.
+	 *
+	 * @var AbstractCondition[]
+	 */
+	protected $conditions = [];
 
 	/**
 	 * Dependency injection container.
@@ -27,13 +33,6 @@ class PromptHandler {
 	 * @var DataStore
 	 */
 	protected $store;
-
-	/**
-	 * Prompts
-	 *
-	 * @var \WP_Forge\Command\Prompts\AbstractPrompt[]
-	 */
-	protected $prompts = array();
 
 	/**
 	 * PromptHandler constructor.
@@ -64,31 +63,35 @@ class PromptHandler {
 	}
 
 	/**
-	 * Add a prompt.
+	 * Add a condition.
 	 *
-	 * @param array $args Prompt arguments
+	 * @param array $args Condition arguments
+	 *
+	 * @return $this
 	 */
 	public function add( array $args ) {
 		/**
-		 * Prompt instance
+		 * Condition instance
 		 *
-		 * @var \WP_Forge\Command\Prompts\AbstractPrompt $prompt
+		 * @var AbstractCondition $condition
 		 */
-		$prompt = $this->container->get( 'prompt' )( $args );
-		$prompt->withData( $this->store );
-		array_push( $this->prompts, $prompt );
+		$condition = $this->container->get( 'condition' )( $args );
+		$condition->withData( $this->store );
+		array_push( $this->conditions, $condition );
 
 		return $this;
 	}
 
 	/**
-	 * Set all prompts.
+	 * Set all conditions.
 	 *
-	 * @param array[] $prompts Collection of prompts
+	 * @param array[] $conditions Collection of conditions.
+	 *
+	 * @return $this
 	 */
-	public function populate( array $prompts ) {
-		$this->prompts = [];
-		foreach ( $prompts as $args ) {
+	public function populate( array $conditions ) {
+		$this->conditions = [];
+		foreach ( $conditions as $args ) {
 			$this->add( $args );
 		}
 
@@ -96,19 +99,16 @@ class PromptHandler {
 	}
 
 	/**
-	 * Render prompts and persist to data store
-	 *
-	 * @return $this
+	 * Evaluate all conditions.
 	 */
-	public function render() {
-		foreach ( $this->prompts as $prompt ) {
-			if ( ! $prompt->shouldRender() ) {
-				continue;
-			}
-			$prompt->render()->transform()->save();
+	public function evaluate( $relation = 'AND' ) {
+		$result = 'AND' === $relation ? true : false;
+		foreach ( $this->conditions as $condition ) {
+			$value  = $condition->validate()->evaluate();
+			$result = ( 'AND' === $relation ) ? $result && $value : $result || $value;
 		}
 
-		return $this;
+		return $result;
 	}
 
 	/**

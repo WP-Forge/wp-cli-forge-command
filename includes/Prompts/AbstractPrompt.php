@@ -3,6 +3,7 @@
 namespace WP_Forge\Command\Prompts;
 
 use WP_Forge\Command\Concerns\CLIOutput;
+use WP_Forge\Command\Concerns\Conditions;
 use WP_Forge\Command\Concerns\Mustache;
 use WP_Forge\Command\Utilities;
 use WP_Forge\Container\Container;
@@ -13,7 +14,7 @@ use WP_Forge\DataStore\DataStore;
  */
 abstract class AbstractPrompt {
 
-	use CLIOutput, Mustache;
+	use CLIOutput, Conditions, Mustache;
 
 	/**
 	 * Prompt arguments.
@@ -62,6 +63,7 @@ abstract class AbstractPrompt {
 	 */
 	public function withArgs( array $args ) {
 		$this->args = $args;
+
 		return $this;
 	}
 
@@ -79,6 +81,7 @@ abstract class AbstractPrompt {
 		if ( is_a( $data, DataStore::class ) ) {
 			$this->store = $data;
 		}
+
 		return $this;
 	}
 
@@ -97,7 +100,7 @@ abstract class AbstractPrompt {
 	 * Get a property value.
 	 *
 	 * @param string $property Property name
-	 * @param mixed  $default Default value
+	 * @param mixed  $default  Default value
 	 *
 	 * @return mixed
 	 */
@@ -109,12 +112,13 @@ abstract class AbstractPrompt {
 	 * Set a property value.
 	 *
 	 * @param string $property Property name
-	 * @param mixed  $value Property value
+	 * @param mixed  $value    Property value
 	 *
 	 * @return $this
 	 */
 	public function set( $property, $value ) {
 		data_set( $this->args, $property, $value );
+
 		return $this;
 	}
 
@@ -179,6 +183,7 @@ abstract class AbstractPrompt {
 	 */
 	public function save() {
 		$this->store->set( $this->name(), $this->value );
+
 		return $this;
 	}
 
@@ -200,6 +205,7 @@ abstract class AbstractPrompt {
 		if ( empty( $this->message() ) ) {
 			$this->error( "Prompt message is empty for '{$this->name()}'" );
 		}
+
 		return $this;
 	}
 
@@ -210,6 +216,7 @@ abstract class AbstractPrompt {
 	 */
 	public function transform() {
 		$this->value = Utilities::applyTransforms( $this->value, data_get( $this->args, 'transform' ) );
+
 		return $this;
 	}
 
@@ -227,8 +234,22 @@ abstract class AbstractPrompt {
 	 */
 	public function shouldRender() {
 
+		$shouldRender = true;
+
 		// Don't render a field if a value already exists for a given name!
-		return ! $this->store->has( $this->name() );
+		if ( $this->store->has( $this->name() ) ) {
+			$shouldRender = false;
+		}
+
+		if ( $shouldRender && $this->has( 'showIf' ) && is_array( $this->get( 'showIf' ) ) ) {
+			$shouldRender = $this
+				->conditions()
+				->withData( $this->store )
+				->populate( $this->get( 'showIf' ) )
+				->evaluate();
+		}
+
+		return $shouldRender;
 	}
 
 }

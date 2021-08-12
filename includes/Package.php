@@ -12,11 +12,9 @@ use ReflectionClass;
 use WP_CLI;
 use WP_Forge\Command\Commands\RepoCommand;
 use WP_Forge\Command\Concerns\CLIOutput;
-use WP_Forge\Command\Concerns\DependencyInjection;
+use WP_Forge\Command\Conditions\ConditionFactory;
 use WP_Forge\Command\Directives\DirectiveFactory;
 use WP_Forge\Command\Prompts\PromptFactory;
-use WP_Forge\Command\Prompts\PromptHandler;
-use WP_Forge\Command\Templates\TemplateFinder;
 use WP_Forge\Container\Container;
 use WP_Forge\DataStore\DataStore;
 
@@ -230,10 +228,12 @@ class Package {
 		);
 
 		$container->set(
-			'template_finder',
-			$container->service(
+			'condition',
+			$container->factory(
 				function ( Container $c ) {
-					return new TemplateFinder( $c );
+					return function ( array $args ) use ( $c ) {
+						return ( new ConditionFactory( $c ) )->make( $args );
+					};
 				}
 			)
 		);

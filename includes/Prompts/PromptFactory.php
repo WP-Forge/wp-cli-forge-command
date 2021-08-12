@@ -21,11 +21,7 @@ class PromptFactory {
 	 * @return AbstractPrompt
 	 */
 	public function make( array $args ) {
-		$type = data_get( $args, 'type' );
-
-		if ( empty( $type ) ) {
-			$this->error( 'Prompt type not provided!' );
-		}
+		$type = data_get( $args, 'type', 'input' );
 
 		if ( ! is_string( $type ) ) {
 			$this->error( 'Prompt type invalid!' );

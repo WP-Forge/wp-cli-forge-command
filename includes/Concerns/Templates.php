@@ -2,6 +2,8 @@
 
 namespace WP_Forge\Command\Concerns;
 
+use WP_Forge\Command\Templates\TemplateFinder;
+
 /**
  * Trait Templates
  */
@@ -17,10 +19,10 @@ trait Templates {
 	/**
 	 * Get a template finder instance.
 	 *
-	 * @return \WP_Forge\Command\Templates\TemplateFinder
+	 * @return TemplateFinder
 	 */
 	protected function templates() {
-		return $this->container->get( 'template_finder' );
+		return new TemplateFinder( $this->container );
 	}
 
 }

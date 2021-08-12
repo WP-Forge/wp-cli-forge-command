@@ -169,11 +169,11 @@ class MakeCommand extends AbstractCommand {
 			 */
 			$data = $this->container( 'data' );
 
-			$promptHandler = $this->prompts()->populate( $prompts );
-			$promptHandler->store()->put( $data->toArray() );
-
-			// Display prompts, collect data, and update results to the registry.
-			$this->registry()->set( 'data', $promptHandler->render()->store() );
+			$this
+				->prompts()
+				->withData( $data )
+				->populate( $prompts )
+				->render();
 		}
 	}
 
