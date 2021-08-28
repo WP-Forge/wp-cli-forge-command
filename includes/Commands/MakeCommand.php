@@ -7,6 +7,7 @@ use WP_Forge\Command\Concerns\Config;
 use WP_Forge\Command\Concerns\DependencyInjection;
 use WP_Forge\Command\Concerns\Filesystem;
 use WP_Forge\Command\Concerns\Scaffolding;
+use WP_Forge\Command\Concerns\Store;
 use WP_Forge\Command\Concerns\Templates;
 use WP_Forge\Command\Directives\AbstractDirective;
 
@@ -15,7 +16,7 @@ use WP_Forge\Command\Directives\AbstractDirective;
  */
 class MakeCommand extends AbstractCommand {
 
-	use DependencyInjection, Config, Filesystem, Scaffolding, Templates;
+	use DependencyInjection, Config, Filesystem, Scaffolding, Store, Templates;
 
 	/**
 	 * Command name.
@@ -161,17 +162,9 @@ class MakeCommand extends AbstractCommand {
 
 		// Check if any prompts should be displayed
 		if ( ! empty( $prompts ) && is_array( $prompts ) ) {
-
-			/**
-			 * Data store for data collected from the user.
-			 *
-			 * @var \WP_Forge\DataStore\DataStore $data
-			 */
-			$data = $this->container( 'data' );
-
 			$this
 				->prompts()
-				->withData( $data )
+				->withData( $this->store() )
 				->populate( $prompts )
 				->render();
 		}

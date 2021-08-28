@@ -7,13 +7,14 @@ use WP_Forge\Command\Concerns\Config;
 use WP_Forge\Command\Concerns\Filesystem;
 use WP_Forge\Command\Concerns\Registry;
 use WP_Forge\Command\Concerns\Scaffolding;
+use WP_Forge\Command\Concerns\Store;
 
 /**
  * Class Copy
  */
 class Copy extends AbstractDirective {
 
-	use Config, Filesystem, Registry, Scaffolding;
+	use Config, Filesystem, Registry, Scaffolding, Store;
 
 	/**
 	 * Type of copy action. Can be copyDir or copyFile.
@@ -75,7 +76,7 @@ class Copy extends AbstractDirective {
 		$this->targetDir  = data_get( $args, 'relativeTo' ) === 'projectRoot' ? $this->projectConfig()->path() : getcwd();
 		$this->sourceDir  = $this->appendPath( $this->container( 'template_dir' ), $this->registry()->get( 'template' ) );
 		$this->action     = is_dir( $this->appendPath( $this->sourceDir, $this->from ) ) ? 'copyDir' : 'copyFile';
-		$this->data       = $this->container( 'data' )->toArray();
+		$this->data       = $this->store()->toArray();
 		$this->exclusions = data_get( $args, 'exclude' );
 
 		// Always exclude scaffolding template config files

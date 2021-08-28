@@ -4,6 +4,7 @@ namespace WP_Forge\Command\Conditions;
 
 use WP_Forge\Command\Concerns\CLIOutput;
 use WP_Forge\Command\Concerns\DependencyInjection;
+use WP_Forge\Command\Concerns\Store;
 use WP_Forge\Helpers\Str;
 
 /**
@@ -11,7 +12,7 @@ use WP_Forge\Helpers\Str;
  */
 class ConditionFactory {
 
-	use CLIOutput, DependencyInjection;
+	use CLIOutput, DependencyInjection, Store;
 
 	/**
 	 * Return a condition instance given the provided data.
@@ -49,7 +50,7 @@ class ConditionFactory {
 		}
 
 		$instance->withArgs( $args );
-		$instance->withData( $this->container( 'data' ) );
+		$instance->withData( $this->store() );
 
 		$instance->validate();
 
