@@ -22,7 +22,7 @@ trait Store {
 	 * @return \WP_Forge\DataStore\DataStore
 	 */
 	protected function store() {
-		return $this->container->get( 'data' );
+		return $this->container->get( 'store' );
 	}
 
 }

@@ -81,17 +81,17 @@ class Package {
 		$projectConfig = $this->container->get( 'project_config' );
 
 		// Get data store for collected user data
-		$data = $this->container->get( 'data' );
+		$store = $this->container->get( 'store' );
 
 		// Pre-populate user data with project settings
-		$data->put( $projectConfig->data()->toArray() );
+		$store->put( $projectConfig->data()->toArray() );
 
 		// Also make important paths available
-		$data->set( 'project_root', $projectConfig->path() );
-		$data->set( 'working_dir', getcwd() );
+		$store->set( 'project_root', $projectConfig->path() );
+		$store->set( 'working_dir', getcwd() );
 
 		// Make the base command available
-		$data->set( 'base_command', $this->container->get( 'base_command' ) );
+		$store->set( 'base_command', $this->container->get( 'base_command' ) );
 
 	}
 
@@ -197,7 +197,7 @@ class Package {
 
 		// Used to store all data collected from the user and persist across commands
 		$container->set(
-			'data',
+			'store',
 			$container->service(
 				function () {
 					return new DataStore();

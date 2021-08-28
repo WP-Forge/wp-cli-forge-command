@@ -5,6 +5,7 @@ namespace WP_Forge\Command\Commands;
 use WP_Forge\Command\AbstractCommand;
 use WP_Forge\Command\Concerns\Config;
 use WP_Forge\Command\Concerns\DependencyInjection;
+use WP_Forge\Command\Concerns\Store;
 use WP_Forge\Command\Utilities;
 
 /**
@@ -12,7 +13,7 @@ use WP_Forge\Command\Utilities;
  */
 class InitCommand extends AbstractCommand {
 
-	use DependencyInjection, Config;
+	use DependencyInjection, Config, Store;
 
 	/**
 	 * Command name.
@@ -62,6 +63,7 @@ class InitCommand extends AbstractCommand {
 			->get( 'project_root' );
 
 		$this->projectConfig()->withPath( $project_root );
+
 
 		// Ensure that we aren't blindly overwriting an existing config
 		if ( ! $force && $this->projectConfig()->hasConfig() ) {

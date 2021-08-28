@@ -74,7 +74,7 @@ class MakeCommand extends AbstractCommand {
 
 		// Make current template directory available to templates
 		$this
-			->container( 'data' )
+			->store()
 			->set(
 				'template_dir',
 				$this->appendPath( $this->container( 'template_dir' ), $this->template )

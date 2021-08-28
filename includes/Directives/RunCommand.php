@@ -58,7 +58,7 @@ class RunCommand extends AbstractDirective {
 
 		// Allow for dynamic replacements in commands
 		if ( false !== strpos( $this->command, '{{' ) ) {
-			$this->command = $this->container->get( 'mustache' )->render( $this->command, $this->container->get( 'data' )->toArray() );
+			$this->command = $this->container->get( 'mustache' )->render( $this->command, $this->container->get( 'store' )->toArray() );
 		}
 
 		if ( Str::startsWith( $this->command, array( 'wp', $this->container( 'base_command' ) ) ) ) {
