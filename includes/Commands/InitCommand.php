@@ -5,6 +5,7 @@ namespace WP_Forge\Command\Commands;
 use WP_Forge\Command\AbstractCommand;
 use WP_Forge\Command\Concerns\Config;
 use WP_Forge\Command\Concerns\DependencyInjection;
+use WP_Forge\Command\Utilities;
 
 /**
  * Class InitCommand
@@ -36,7 +37,7 @@ class InitCommand extends AbstractCommand {
 	 *
 	 * @when before_wp_load
 	 *
-	 * @param array $args Command arguments
+	 * @param array $args    Command arguments
 	 * @param array $options Command options
 	 */
 	public function __invoke( $args, $options ) {
@@ -53,7 +54,7 @@ class InitCommand extends AbstractCommand {
 					'name'      => 'project_root',
 					'type'      => 'input',
 					'default'   => '.',
-					'transform' => 'realpath',
+					'transform' => Utilities::class . '::resolvePath',
 				)
 			)
 			->render()
@@ -76,46 +77,69 @@ class InitCommand extends AbstractCommand {
 				array(
 					array(
 						'message' => 'Project Name',
-						'name'    => 'project_name',
-						'type'    => 'input',
+						'name'    => 'name',
+					),
+					array(
+						'message' => 'Project Description',
+						'name'    => 'description',
 					),
 					array(
 						'message' => 'Vendor Name',
-						'name'    => 'vendor_name',
-						'type'    => 'input',
+						'name'    => 'package.vendor',
 					),
 					array(
 						'message'           => 'Package Name',
-						'name'              => 'package_name',
-						'type'              => 'input',
-						'default'           => '{{ project_name }}',
+						'name'              => 'package.name',
+						'default'           => '{{ name }}',
 						'transform_default' => 'kebabCase',
+					),
+					array(
+						'message' => 'License',
+						'name'    => 'license',
+						'type'    => 'radio',
+						'default' => 'GPL-2.0-or-greater',
+						'options' => array(
+							'GPL-2.0-or-greater',
+							'MIT'
+						),
+					),
+					array(
+						'message' => 'Author Name',
+						'name'    => 'author.name',
+						'type'    => 'input',
+						'default' => trim( shell_exec( 'git config user.name' ) ),
+					),
+					array(
+						'message' => 'Author Email',
+						'name'    => 'author.email',
+						'type'    => 'input',
+						'default' => trim( shell_exec( 'git config user.email' ) ),
 					),
 					array(
 						'message' => 'Project text domain',
 						'name'    => 'text_domain',
 						'type'    => 'input',
-						'default' => basename( getcwd() ),
+						'default' => '{{ name | kebabCase }}',
 					),
 					array(
 						'message'           => 'Project namespace',
 						'name'              => 'namespace',
 						'type'              => 'input',
-						'default'           => '{{ project_name }}',
+						'default'           => '{{ name }}',
 						'transform_default' => 'pascalCase',
 					),
 					array(
 						'message'           => 'Long prefix',
 						'name'              => 'prefixes.long',
 						'type'              => 'input',
-						'default'           => '{{ project_name }}',
+						'default'           => '{{ name }}',
 						'transform_default' => 'pascalCase',
 					),
 					array(
 						'message'           => 'Short prefix',
 						'name'              => 'prefixes.short',
 						'type'              => 'input',
-						'default'           => '{{ project_name }}',
+						'default'           => '{{ name }}',
 						'transform_default' => 'abbreviate',
 					),
 					array(
