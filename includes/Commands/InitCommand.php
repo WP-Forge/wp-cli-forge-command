@@ -182,6 +182,17 @@ class InitCommand extends AbstractCommand {
 			->withData( $data )
 			->save();
 
+		// Update all stored data to make it available for any subsequent commands
+		foreach ( $this->projectConfig()->data()->toArray() as $key => $value ) {
+			$this->store()->set( $key, $value );
+		}
+
+		// If the new project config is not in the current directory, ensure that subsequent commands run from the correct location.
+		$this->store()->set( 'project_root', $this->projectConfig()->path() );
+		$this->store()->set( 'working_dir', $this->projectConfig()->path() );
+		chdir( $this->projectConfig()->path() );
+
+		$this->success( 'Project config file created at: ' . $this->projectConfig()->path() );
 	}
 
 }
