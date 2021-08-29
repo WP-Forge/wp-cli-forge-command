@@ -85,7 +85,7 @@ class SetJSONValue extends AbstractDirective {
 
 		$data = data_set( $data, $this->key, $this->value );
 
-		$filesystem->write( $this->file, json_encode( $data, JSON_PRETTY_PRINT ) );
+		$filesystem->write( $this->file, json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 	}
 
 }
