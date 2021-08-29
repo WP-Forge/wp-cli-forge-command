@@ -86,6 +86,11 @@ class InitCommand extends AbstractCommand {
 						'name'    => 'description',
 					),
 					array(
+						'message' => 'Project URL',
+						'name'    => 'url',
+						'default' => '',
+					),
+					array(
 						'message' => 'Vendor Name',
 						'name'    => 'package.vendor',
 					),
@@ -97,13 +102,10 @@ class InitCommand extends AbstractCommand {
 					),
 					array(
 						'message' => 'License',
-						'name'    => 'license',
+						'name'    => 'license.slug',
 						'type'    => 'radio',
 						'default' => 'GPL-2.0-or-later',
-						'options' => array(
-							'GPL-2.0-or-later',
-							'MIT'
-						),
+						'options' => array_keys( $this->getLicenses() ),
 					),
 					array(
 						'message' => 'Author Name',
@@ -116,6 +118,12 @@ class InitCommand extends AbstractCommand {
 						'name'    => 'author.email',
 						'type'    => 'input',
 						'default' => trim( shell_exec( 'git config user.email' ) ),
+					),
+					array(
+						'message' => 'Author URL',
+						'name'    => 'author.url',
+						'type'    => 'input',
+						'default' => '',
 					),
 					array(
 						'message' => 'Project text domain',
@@ -177,6 +185,10 @@ class InitCommand extends AbstractCommand {
 			->render()
 			->data();
 
+		// Set all license data
+		$data['license']['name'] = $this->getLicenses()[ $data['license']['slug'] ]['name'];
+		$data['license']['url']  = $this->getLicenses()[ $data['license']['slug'] ]['url'];
+
 		$this
 			->projectConfig()
 			->withData( $data )
@@ -193,6 +205,20 @@ class InitCommand extends AbstractCommand {
 		chdir( $this->projectConfig()->path() );
 
 		$this->success( 'Project config file created at: ' . $this->projectConfig()->path() );
+	}
+
+	/**
+	 * Get available licenses.
+	 *
+	 * @return array
+	 */
+	public function getLicenses() {
+		return [
+			'GPL-2.0-or-later' => [
+				'name' => 'GPL 2.0 or later',
+				'url'  => 'https://www.gnu.org/licenses/gpl-2.0.html',
+			]
+		];
 	}
 
 }
