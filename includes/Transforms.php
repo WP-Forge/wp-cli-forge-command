@@ -22,6 +22,7 @@ class Transforms {
 		foreach ( $words as $word ) {
 			$initials[] = substr( $word, 0, 1 );
 		}
+
 		return implode( $initials );
 	}
 
@@ -34,6 +35,17 @@ class Transforms {
 	 */
 	public static function camelCase( $value ) {
 		return Str::camel( $value );
+	}
+
+	/**
+	 * Convert to dot case.
+	 *
+	 * @param string $value Value to be transformed
+	 *
+	 * @return string
+	 */
+	public static function dotCase( $value ) {
+		return str_replace( '-', '.', self::kebabCase( $value ) );
 	}
 
 	/**
@@ -67,6 +79,17 @@ class Transforms {
 	 */
 	public static function pascalCase( $value ) {
 		return Str::studly( $value );
+	}
+
+	/**
+	 * Convert to path case.
+	 *
+	 * @param string $value Value to be transformed
+	 *
+	 * @return string
+	 */
+	public static function pathCase( $value ) {
+		return str_replace( '-', DIRECTORY_SEPARATOR, self::kebabCase( $value ) );
 	}
 
 	/**
