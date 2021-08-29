@@ -184,7 +184,7 @@ class Config {
 	 * @return $this
 	 */
 	public function save() {
-		return $this->write( json_encode( (object) $this->data->toArray(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+		return $this->write( json_encode( (object) $this->data->toArray(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
 	}
 
 }

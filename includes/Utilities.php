@@ -72,7 +72,7 @@ class Utilities {
 	/**
 	 * Resolve a path. Like realpath(), but works for non-existent files and directories.
 	 *
-	 * @param $path
+	 * @param string $path Path to be resolved
 	 *
 	 * @return false|mixed|string
 	 */
@@ -81,19 +81,22 @@ class Utilities {
 			$path = str_replace( DIRECTORY_SEPARATOR, '/', $path );
 		}
 		$search = explode( '/', $path );
-		$search = array_filter( $search, function ( $part ) {
-			return $part !== '.';
-		} );
+		$search = array_filter(
+			$search,
+			function ( $part ) {
+				return '.' !== $part;
+			}
+		);
 		$append = array();
 		$match  = false;
-		while ( count( $search ) > 0 ) {
+		while ( count( $search ) > 0 ) { // phpcs:ignore Squiz.PHP.DisallowSizeFunctionsInLoops.Found
 			$match = realpath( implode( '/', $search ) );
-			if ( $match !== false ) {
+			if ( false !== $match ) {
 				break;
 			}
 			array_unshift( $append, array_pop( $search ) );
 		};
-		if ( $match === false ) {
+		if ( false === $match ) {
 			$match = getcwd();
 		}
 		if ( count( $append ) > 0 ) {

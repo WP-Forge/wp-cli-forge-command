@@ -64,7 +64,6 @@ class InitCommand extends AbstractCommand {
 
 		$this->projectConfig()->withPath( $project_root );
 
-
 		// Ensure that we aren't blindly overwriting an existing config
 		if ( ! $force && $this->projectConfig()->hasConfig() ) {
 			$this->error( 'A project config already exists at that location: ' . $this->projectConfig()->filePath(), false );
@@ -111,13 +110,13 @@ class InitCommand extends AbstractCommand {
 						'message' => 'Author Name',
 						'name'    => 'author.name',
 						'type'    => 'input',
-						'default' => trim( shell_exec( 'git config user.name' ) ),
+						'default' => trim( shell_exec( 'git config user.name' ) ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
 					),
 					array(
 						'message' => 'Author Email',
 						'name'    => 'author.email',
 						'type'    => 'input',
-						'default' => trim( shell_exec( 'git config user.email' ) ),
+						'default' => trim( shell_exec( 'git config user.email' ) ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
 					),
 					array(
 						'message' => 'Author URL',
@@ -213,12 +212,12 @@ class InitCommand extends AbstractCommand {
 	 * @return array
 	 */
 	public function getLicenses() {
-		return [
-			'GPL-2.0-or-later' => [
+		return array(
+			'GPL-2.0-or-later' => array(
 				'name' => 'GPL 2.0 or later',
 				'url'  => 'https://www.gnu.org/licenses/gpl-2.0.html',
-			]
-		];
+			),
+		);
 	}
 
 }
