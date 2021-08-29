@@ -5,6 +5,7 @@ namespace WP_Forge\Command\Directives;
 use WP_CLI;
 use WP_Forge\Command\Concerns\Config;
 use WP_Forge\Command\Concerns\Filesystem;
+use WP_Forge\Command\Concerns\Mustache;
 use WP_Forge\Command\Concerns\Registry;
 use WP_Forge\Command\Concerns\Scaffolding;
 use WP_Forge\Command\Concerns\Store;
@@ -14,7 +15,7 @@ use WP_Forge\Command\Concerns\Store;
  */
 class Copy extends AbstractDirective {
 
-	use Config, Filesystem, Registry, Scaffolding, Store;
+	use Config, Filesystem, Mustache, Registry, Scaffolding, Store;
 
 	/**
 	 * Type of copy action. Can be copyDir or copyFile.
@@ -72,7 +73,7 @@ class Copy extends AbstractDirective {
 	 */
 	public function initialize( array $args ) {
 		$this->from       = data_get( $args, 'from' );
-		$this->to         = data_get( $args, 'to' );
+		$this->to         = $this->replace( data_get( $args, 'to' ), $this->store()->toArray() );
 		$this->targetDir  = data_get( $args, 'relativeTo' ) === 'projectRoot' ? $this->projectConfig()->path() : getcwd();
 		$this->sourceDir  = $this->appendPath( $this->container( 'template_dir' ), $this->registry()->get( 'template' ) );
 		$this->action     = is_dir( $this->appendPath( $this->sourceDir, $this->from ) ) ? 'copyDir' : 'copyFile';
