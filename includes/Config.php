@@ -60,6 +60,7 @@ class Config {
 		if ( is_a( $data, DataStore::class ) ) {
 			$this->data = $data;
 		}
+
 		return $this;
 	}
 
@@ -72,6 +73,7 @@ class Config {
 	 */
 	public function withFileName( $fileName ) {
 		$this->fileName = $fileName;
+
 		return $this;
 	}
 
@@ -84,6 +86,7 @@ class Config {
 	 */
 	public function withPath( $path ) {
 		$this->path = $path;
+
 		return $this;
 	}
 
@@ -132,6 +135,7 @@ class Config {
 	 */
 	public function hasConfig( $path = null ) {
 		$path = is_null( $path ) ? $this->path : $path;
+
 		return file_exists( $this->appendPath( $path, $this->fileName ) );
 	}
 
@@ -148,6 +152,7 @@ class Config {
 			$this->error( 'Unable to parse configuration file: ' . $filePath );
 		}
 		$this->data->put( $config );
+
 		return $config;
 	}
 
@@ -169,6 +174,7 @@ class Config {
 	 */
 	public function write( $content ) {
 		$this->filesystem( $this->path )->write( $this->fileName, $content );
+
 		return $this;
 	}
 
@@ -178,7 +184,7 @@ class Config {
 	 * @return $this
 	 */
 	public function save() {
-		return $this->write( $this->data->toJson() );
+		return $this->write( json_encode( (object) $this->data->toArray(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 	}
 
 }
