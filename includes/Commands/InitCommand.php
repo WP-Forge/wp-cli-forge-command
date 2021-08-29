@@ -99,9 +99,9 @@ class InitCommand extends AbstractCommand {
 						'message' => 'License',
 						'name'    => 'license',
 						'type'    => 'radio',
-						'default' => 'GPL-2.0-or-greater',
+						'default' => 'GPL-2.0-or-later',
 						'options' => array(
-							'GPL-2.0-or-greater',
+							'GPL-2.0-or-later',
 							'MIT'
 						),
 					),
