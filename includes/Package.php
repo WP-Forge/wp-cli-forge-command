@@ -90,6 +90,9 @@ class Package {
 		$store->set( 'project_root', $projectConfig->path() );
 		$store->set( 'working_dir', getcwd() );
 
+		// Set current year as an available value
+		$store->set( 'year', date( 'Y' ) );
+
 		// Make the base command available
 		$store->set( 'base_command', $this->container->get( 'base_command' ) );
 
