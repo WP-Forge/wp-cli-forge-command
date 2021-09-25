@@ -11,13 +11,6 @@ use WP_Forge\Helpers\Str;
 class RunCommand extends AbstractDirective {
 
 	/**
-	 * Type of copy action. Can be copyDir or copyFile.
-	 *
-	 * @var string
-	 */
-	protected $action;
-
-	/**
 	 * Command to be run.
 	 *
 	 * @var string
