@@ -10,6 +10,7 @@ use WP_Forge\Command\Concerns\Scaffolding;
 use WP_Forge\Command\Concerns\Store;
 use WP_Forge\Command\Concerns\Templates;
 use WP_Forge\Command\Directives\AbstractDirective;
+use WP_Forge\Command\Utilities;
 
 /**
  * Class MakeCommand
@@ -50,6 +51,9 @@ class MakeCommand extends AbstractCommand {
 	 * [--force]
 	 * : Whether or not to force overwrite files.
 	 *
+	 * [--project-root]
+	 * : The path to consider the project root.
+	 *
 	 * @when before_wp_load
 	 *
 	 * @param array $args    Command arguments
@@ -58,6 +62,11 @@ class MakeCommand extends AbstractCommand {
 	public function __invoke( $args, $options ) {
 
 		$this->init( $args, $options );
+
+		// Set project root
+		if ( $this->option( 'project-root' ) ) {
+			$this->store()->set( 'project_root', Utilities::resolvePath( $this->option( 'project-root' ) ) );
+		}
 
 		$this->template = $this->setTemplate();
 		$this->registry()->set( 'template', $this->template );
