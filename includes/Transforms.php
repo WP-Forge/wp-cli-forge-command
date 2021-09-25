@@ -38,6 +38,17 @@ class Transforms {
 	}
 
 	/**
+	 * Convert a string to dash case.
+	 *
+	 * @param string $value Value to be transformed
+	 *
+	 * @return string
+	 */
+	public static function dashCase( $value ) {
+		return self::kebabCase( $value );
+	}
+
+	/**
 	 * Convert to dot case.
 	 *
 	 * @param string $value Value to be transformed
