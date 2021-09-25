@@ -85,9 +85,9 @@ class InitCommand extends AbstractCommand {
 						'name'    => 'description',
 					),
 					array(
-						'message' => 'Project URL',
-						'name'    => 'url',
-						'default' => '',
+						'message'  => 'Project URL',
+						'name'     => 'url',
+						'required' => false,
 					),
 					array(
 						'message' => 'Vendor Name',
@@ -119,10 +119,10 @@ class InitCommand extends AbstractCommand {
 						'default' => trim( shell_exec( 'git config user.email' ) ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
 					),
 					array(
-						'message' => 'Author URL',
-						'name'    => 'author.url',
-						'type'    => 'input',
-						'default' => '',
+						'message'  => 'Author URL',
+						'name'     => 'author.url',
+						'type'     => 'input',
+						'required' => false,
 					),
 					array(
 						'message' => 'Project text domain',
