@@ -87,7 +87,7 @@ class Package {
 		$store->put( $projectConfig->data()->toArray() );
 
 		// Also make important paths available
-		$store->set( 'project_root', $projectConfig->path() );
+		$store->set( 'project_root', $projectConfig->hasConfig() ? $projectConfig->path() : getcwd() );
 		$store->set( 'working_dir', getcwd() );
 
 		// Set current year as an available value
