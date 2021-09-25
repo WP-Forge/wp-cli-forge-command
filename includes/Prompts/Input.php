@@ -31,7 +31,7 @@ class Input extends AbstractPrompt {
 
 		// Continue to show prompt if value is empty and field is required.
 		while ( empty( $value ) && $this->isRequired() ) {
-			$this->error('Field is required!', 0);
+			$this->error( 'Field is required!', 0 );
 			$value = $input->prompt();
 		}
 
