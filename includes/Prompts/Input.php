@@ -29,14 +29,29 @@ class Input extends AbstractPrompt {
 		// Get the value from the user
 		$value = $input->prompt();
 
-		// Continue to show prompt if there is no default value and entered value is empty
-		while ( empty( $value ) && empty( $this->get( 'default' ) ) ) {
+		// Continue to show prompt if value is empty and field is required.
+		while ( empty( $value ) && $this->isRequired() ) {
+			$this->error('Field is required!', 0);
 			$value = $input->prompt();
 		}
 
 		$this->value = $value;
 
 		return $this;
+	}
+
+	/**
+	 * Check if field is required.
+	 *
+	 * @return bool
+	 */
+	protected function isRequired() {
+		$isRequired = true;
+		if ( $this->has( 'required' ) ) {
+			$isRequired = (bool) $this->get( 'required' );
+		}
+
+		return $isRequired;
 	}
 
 	/**
