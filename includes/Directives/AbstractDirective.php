@@ -17,7 +17,7 @@ abstract class AbstractDirective {
 	 *
 	 * @param array $args Directive arguments.
 	 */
-	abstract public function initialize( array $args);
+	abstract public function initialize( array $args );
 
 	/**
 	 * Validate the directive properties.
