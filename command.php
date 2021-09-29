@@ -1,6 +1,6 @@
 <?php
 
-use WP_Forge\Command\Package;
+use WP_Forge\WP_Scaffolding_Tool\Package;
 
 if ( ! class_exists( 'WP_CLI' ) ) {
 	return;
@@ -16,6 +16,6 @@ new Package(
 		'template_config_filename' => 'config.json',
 		'project_config_filename'  => '.wp-forge.json',
 		'global_config_filename'   => '.wp-forge.json',
-		'default_template_repo'    => 'https://github.com/wp-forge/scaffolding-templates',
+		'default_template_repo'    => 'https://github.com/wp-forge/scaffolding-templates.git',
 	)
 );

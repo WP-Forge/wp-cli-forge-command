@@ -3,7 +3,7 @@
   "description": "A zero-config scaffolding tool for WordPress.",
   "type": "wp-cli-package",
   "homepage": "https://github.com/wp-forge/wp-cli-forge-command",
-  "license": "MIT",
+  "license": "GPL-2.0-or-later",
   "authors": [
     {
       "name": "Micah Wood",
@@ -12,14 +12,7 @@
     }
   ],
   "require": {
-    "php": ">=7.0",
-    "league/climate": "^3.7",
-    "league/flysystem": "^2.1",
-    "mustache/mustache": "^2.13",
-    "wpscholar/collection": "^1.0",
-    "wp-forge/container": "^1.0",
-    "wp-forge/data-store": "^1.0",
-    "wp-forge/helpers": "^1.1"
+    "wp-forge/wp-scaffolding-tool": "^1.0"
   },
   "require-dev": {
     "wpscholar/phpcs-standards-wpscholar": "^1.0"
@@ -27,10 +20,7 @@
   "autoload": {
     "files": [
       "command.php"
-    ],
-    "psr-4": {
-      "WP_Forge\\Command\\": "includes"
-    }
+    ]
   },
   "scripts": {
     "lint": [

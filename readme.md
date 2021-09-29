@@ -1,9 +1,6 @@
 # WP Forge Command
 
-A zero-configuration* scaffolding tool built as a WP-CLI package.
-
-*This tool does assume that you have a Git repository containing [scaffolding templates](#scaffolding-templates) that
-follow a specific convention.
+A zero-configuration scaffolding tool for WordPress built as a WP-CLI package.
 
 ## Installation
 
