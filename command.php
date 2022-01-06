@@ -16,6 +16,6 @@ new Package(
 		'template_config_filename' => 'config.json',
 		'project_config_filename'  => '.wp-forge.json',
 		'global_config_filename'   => '.wp-forge.json',
-		'default_template_repo'    => 'https://github.com/wp-forge/scaffolding-templates.git',
+		'default_template_repo'    => 'git@github.com:wp-forge/scaffolding-templates.git',
 	)
 );
