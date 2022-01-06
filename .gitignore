@@ -3,4 +3,5 @@
 .vscode
 
 # Composer
+composer.lock
 /vendor
